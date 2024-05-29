@@ -10,6 +10,7 @@ make
 
 ## Usage
 ```
-./bin/tokenicer
+./bin/tokenicer text_file.txt
 ```
+where `text_file.txt` is a utf-8 encoded text file.
 

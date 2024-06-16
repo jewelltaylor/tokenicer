@@ -1,5 +1,6 @@
 CC = clang
-CFLAGS = -Wall -Wextra -Iinclude
+CFLAGS = -Wall -Wextra -Iinclude `pkg-config --cflags glib-2.0`
+LDFLAGS = `pkg-config --libs glib-2.0`
 
 SRC_DIR = src
 OBJ_DIR = obj
@@ -12,7 +13,7 @@ TARGET = $(BIN_DIR)/tokenicer
 all: $(TARGET)
 
 $(TARGET): $(OBJS) | $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@

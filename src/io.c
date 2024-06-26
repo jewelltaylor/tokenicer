@@ -68,3 +68,11 @@ void print_token_pair_counts(GHashTable * token_pair_counts) {
 
     g_list_free(keys);
 }
+
+void print_ids(GList * ids) {
+    for (GList * iterator = ids; iterator != NULL; iterator = iterator->next) {
+        int * id = iterator->data;
+        printf("%d ", *id);
+    }
+    printf("Done \n");
+}

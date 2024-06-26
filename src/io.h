@@ -11,4 +11,6 @@ void print_bytes_in_buffer(unsigned char* buffer, size_t filesize);
 
 void print_token_pair_counts(GHashTable* token_pair_counts);
 
+void print_ids(GList * ids);
+
 #endif

@@ -4,5 +4,18 @@
 # Compiled binary files
 /bin/
 
+# Test Data
+
+data/*
+
+# Dev Setup
+compile_commands.json
+
+# MAC
+*.DS_Store
+
+# Cache
+*.cache
+
 # Other
 *~

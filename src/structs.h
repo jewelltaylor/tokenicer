@@ -8,6 +8,11 @@ typedef struct {
     int second_token;
 } TokenPair;
 
+typedef struct {
+    TokenPair pair;
+    int count;
+} TokenPairCount;
+
 guint token_pair_hash(gconstpointer key);
 
 gboolean token_pair_equal(gconstpointer a, gconstpointer b);

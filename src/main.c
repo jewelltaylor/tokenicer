@@ -6,16 +6,21 @@
 #include "structs.h"
 
 
-void buffer_to_ids(unsigned char * buffer, int * ids, int sequence_length) { 
+void buffer_to_ids(unsigned char * buffer, GList ** pids, int sequence_length) { 
     for (int i = 0; i < sequence_length; i++) {
-        ids[i] = (int) buffer[i];
+        int * id = malloc(sizeof(int));
+        *id = (int) buffer[i];
+        *pids = g_list_prepend(*pids, id);
     }
+    *pids = g_list_reverse(*pids);
     return;
 }
 
-void get_stats(int * ids, int n_tokens, GHashTable * token_pair_counts) {
-    for (int i = 0; i < n_tokens - 1; i++) { 
-        TokenPair * pair = token_pair_new(ids[i], ids[i+1]);
+void get_stats(GList * ids, GHashTable * token_pair_counts) {
+    for (GList * iterator = ids; iterator !=  NULL && iterator->next != NULL; iterator = iterator->next) { 
+        int *first_token = (int *) iterator->data;
+        int *second_token = (int *) iterator->next->data;
+        TokenPair * pair = token_pair_new(*first_token, *second_token);
         int * lookup = g_hash_table_lookup(token_pair_counts, pair);
 
         if (lookup == NULL) {
@@ -24,6 +29,82 @@ void get_stats(int * ids, int n_tokens, GHashTable * token_pair_counts) {
             int prev_val = *lookup;
             g_hash_table_replace(token_pair_counts, pair, int_new(prev_val + 1));
         }
+    }
+}
+
+void get_max_token_pair_count(GHashTable * token_pair_counts, TokenPairCount * max_token_pair_count) {
+    GList *keys = g_hash_table_get_keys(token_pair_counts);
+    GList *iter = keys; 
+
+    TokenPair *max_pair = NULL;
+    int *max_value = malloc(sizeof(int));
+
+    while (iter != NULL) {
+        TokenPair *pair = (TokenPair *)iter->data;
+        int *value = (int *)g_hash_table_lookup(token_pair_counts, pair);
+
+        if ((max_value == NULL) || (max_value != NULL && *value > *max_value)) {
+            max_pair = pair; 
+            max_value = value;
+        }
+        iter = iter->next;
+    }
+    g_list_free(keys);
+
+    if (max_pair == NULL || max_value == NULL) {
+        perror("Error getting max token pair");
+        return;
+    }
+    TokenPair* new_max_pair = malloc(sizeof(TokenPair)); 
+    int* new_max_value = malloc(sizeof(int)); 
+    *new_max_pair = *max_pair;
+    *new_max_value = *max_value;
+    max_token_pair_count->pair = *new_max_pair;
+    max_token_pair_count->count = *new_max_value;
+
+    return;
+}
+
+void merge(GList * ids, GList ** new_pids, TokenPairCount * token_pair_count, int id) {
+    TokenPair pair = token_pair_count->pair;
+    for (GList * iterator = ids; iterator != NULL && iterator->next != NULL; iterator = iterator->next) {
+        int * new_id = malloc(sizeof(int));
+        int *first_token = (int *) iterator->data;
+        int *second_token = (int *) iterator->next->data;
+        if (pair.first_token == *first_token && pair.second_token == *second_token) {
+            iterator = iterator->next;
+            *new_id = id;
+        } else {
+            *new_id = *first_token;
+        }
+        *new_pids = g_list_prepend(*new_pids, new_id);
+    }
+    *new_pids = g_list_reverse(*new_pids);
+}
+
+void get_merges(GList * ids, int n_merges, GHashTable * token_merge_table) {
+    int n_tokens = 256;
+    GList * new_ids = NULL;
+    for (int i = 0; i < n_merges; i++) {
+        GHashTable *token_pair_counts = g_hash_table_new_full(token_pair_hash, token_pair_equal, token_pair_free, value_free); 
+        get_stats(ids, token_pair_counts);
+
+        TokenPairCount * max_token_pair_count = malloc(sizeof(TokenPairCount));  
+        get_max_token_pair_count(token_pair_counts, max_token_pair_count);
+
+        new_ids = NULL;
+        merge(ids, &new_ids, max_token_pair_count, n_tokens+i);
+        g_list_free_full(ids, value_free);
+
+        ids = new_ids;
+
+        g_hash_table_insert(token_merge_table, &max_token_pair_count->pair, int_new(n_tokens+i));
+
+        g_hash_table_destroy(token_pair_counts); 
+    }
+
+    if (new_ids != NULL) {
+        g_list_free_full(new_ids, value_free);
     }
 }
 
@@ -38,20 +119,18 @@ int main(int argc, char* argv[]) {
         }
         read_filepath(filepath, buffer, filesize);
 
-        // print_bytes_in_buffer(buffer, filesize);
+        GList * ids = NULL;
+        buffer_to_ids(buffer, &ids, filesize);
 
-        int *ids = malloc(filesize * sizeof(int));
-        buffer_to_ids(buffer, ids, filesize);
+        GHashTable *token_merge_table= g_hash_table_new_full(token_pair_hash, token_pair_equal, token_pair_free, value_free); 
 
-        GHashTable *token_pair_counts = g_hash_table_new_full(token_pair_hash, token_pair_equal, token_pair_free, value_free); 
-
-        get_stats(ids, filesize, token_pair_counts);
-        print_token_pair_counts(token_pair_counts);
+        get_merges(ids, 5, token_merge_table);
+        print_token_pair_counts(token_merge_table);
 
         free(buffer);
-        free(ids);
-        g_hash_table_destroy(token_pair_counts); 
-        printf("Success");
+
+        g_hash_table_destroy(token_merge_table); 
+        printf("Success \n");
 
     } else {
         perror("No Filepath Specified.");

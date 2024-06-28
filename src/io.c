@@ -6,7 +6,6 @@
 #include <glib.h> // fstat 
 
 #include "io.h"
-#include "structs.h"
 
 size_t get_filesize(char* filepath) { 
     int fd = open(filepath, O_RDONLY);
@@ -55,19 +54,6 @@ void print_bytes_in_buffer(unsigned char* buffer, size_t filesize) {
     printf("\n");
 }
 
-void print_token_pair_counts(GHashTable * token_pair_counts) {
-    GList *keys = g_hash_table_get_keys(token_pair_counts);
-    GList *iter = keys;
-
-    while (iter != NULL) {
-        TokenPair *key = iter->data;
-        int *value = g_hash_table_lookup(token_pair_counts, key);
-        printf("(%d, %d) => %d\n", key->first_token, key->second_token, *value);
-        iter = iter->next;
-    }
-
-    g_list_free(keys);
-}
 
 void print_ids(GList * ids) {
     for (GList * iterator = ids; iterator != NULL; iterator = iterator->next) {

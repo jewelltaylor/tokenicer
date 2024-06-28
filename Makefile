@@ -6,8 +6,12 @@ SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
 
-SRCS = $(wildcard $(SRC_DIR)/*.c)
-OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+# Use find to get all .c files in src directory and its subdirectories
+SRCS = $(shell find $(SRC_DIR) -name '*.c')
+
+# Create object files list with corresponding directory structure in obj
+OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
+
 TARGET = $(BIN_DIR)/tokenicer
 
 all: $(TARGET)
@@ -16,6 +20,7 @@ $(TARGET): $(OBJS) | $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BIN_DIR) $(OBJ_DIR):

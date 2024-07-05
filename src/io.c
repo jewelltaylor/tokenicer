@@ -6,6 +6,7 @@
 #include <glib.h> // fstat 
 
 #include "io.h"
+#include "tokenizer_ops.h"
 
 size_t get_filesize(char* filepath) { 
     int fd = open(filepath, O_RDONLY);
@@ -61,4 +62,14 @@ void print_ids(GList * ids) {
         printf("%d ", *id);
     }
     printf("Done \n");
+}
+
+void print_vocab(char * vocab[VOCAB_SIZE]) {
+    for (int i = 0; i < VOCAB_SIZE; i++) {
+        if (vocab[i] == NULL || vocab[i] == 0) {
+           break; 
+        }
+
+        printf("vocab[%d] = %s\n", i, vocab[i]);
+    }
 }

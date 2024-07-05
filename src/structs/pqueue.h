@@ -4,7 +4,14 @@
 #include <glib.h>
 #include "general.h"
 
-void pop(TokenPairCount * token_pair_count, GQueue * queue);
-void insert(TokenPairCount * token_pair_count, GQueue * queue);
+typedef struct TokenPairValuePriorityQueue TokenPairValuePriorityQueue;
+
+TokenPairValuePriorityQueue * pqueue_new();
+
+void pqueue_free(TokenPairValuePriorityQueue * pqueue);
+
+TokenPairCount * pqueue_remove(TokenPairValuePriorityQueue * pqueue);
+
+void pqueue_insert(TokenPairValuePriorityQueue * pqueue,TokenPairCount * token_pair_count);
 
 #endif // PQUEUE_H!

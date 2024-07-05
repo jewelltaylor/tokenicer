@@ -21,8 +21,8 @@ guint token_pair_hash(gconstpointer a) {
 
 TokenPairToIntTable * table_new() {
     TokenPairToIntTable * table = malloc(sizeof(TokenPairToIntTable));
-    GHashTable *token_merge_table= g_hash_table_new_full(token_pair_hash, token_pair_equal, free, free); 
-    table->table = token_merge_table;
+    GHashTable *glib_table = g_hash_table_new_full(token_pair_hash, token_pair_equal, free, free); 
+    table->table = glib_table;
     return table; 
 }
 

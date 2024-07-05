@@ -5,6 +5,8 @@
 #include "io.h"
 #include "structs/table.h"
 
+#define VOCAB_SIZE 267 
+
 
 void buffer_to_ids(unsigned char * buffer, GList ** pids, int sequence_length) { 
     for (int i = 0; i < sequence_length; i++) {
@@ -38,36 +40,65 @@ void get_max_token_pair_count(TokenPairToIntTable * token_pair_counts, TokenPair
     GList *iter = keys; 
 
     TokenPair *max_pair = NULL;
-    int *max_value = malloc(sizeof(int));
+    int max_value = -1;
 
     while (iter != NULL) {
         TokenPair *pair = (TokenPair *)iter->data;
         int value = table_lookup(token_pair_counts, pair);
 
-        if ((max_value == NULL) || (max_value != NULL && value > *max_value)) {
+        if (value > max_value) {
             max_pair = pair; 
-            *max_value = value;
+            max_value = value;
         }
         iter = iter->next;
     }
     g_list_free(keys);
 
-    if (max_pair == NULL || max_value == NULL) {
+    if (max_pair == NULL) {
         perror("Error getting max token pair");
         return;
     }
-    TokenPair* new_max_pair = malloc(sizeof(TokenPair)); 
-    int* new_max_value = malloc(sizeof(int)); 
-    *new_max_pair = *max_pair;
-    *new_max_value = *max_value;
-    max_token_pair_count->pair = *new_max_pair;
-    max_token_pair_count->count = *new_max_value;
+    max_token_pair_count->pair = *max_pair;
+    max_token_pair_count->count = max_value;
 
     return;
 }
 
-void merge(GList * ids, GList ** new_pids, TokenPairCount * token_pair_count, int id) {
-    TokenPair pair = token_pair_count->pair;
+void get_initial_vocab(char * vocab[VOCAB_SIZE]) {
+    for (int i = 0; i < 256; i++) {
+        vocab[i] = (char *) malloc(2 * sizeof(char));
+
+        if (vocab[i] == NULL) {
+            perror("Error allocating initial vocab");
+            exit(EXIT_FAILURE);
+        }
+
+        vocab[i][0] = (char) i;
+        vocab[i][1] = '\0';
+    }
+}
+
+void vocab_free(char * vocab[VOCAB_SIZE]) {
+    for (int i = 0; i < VOCAB_SIZE; i++) {
+        if (vocab[i] == NULL || vocab[i] == 0) {
+            break;
+        }
+
+        free(vocab[i]);
+    }
+}
+
+void print_vocab(char * vocab[VOCAB_SIZE]) {
+    for (int i = 0; i < VOCAB_SIZE; i++) {
+        if (vocab[i] == NULL || vocab[i] == 0) {
+           break; 
+        }
+
+        printf("vocab[%d] = %s\n", i, vocab[i]);
+    }
+}
+
+void merge(GList * ids, GList ** new_pids, TokenPair pair, int id) {
     for (GList * iterator = ids; iterator != NULL && iterator->next != NULL; iterator = iterator->next) {
         int * new_id = malloc(sizeof(int));
         int *first_token = (int *) iterator->data;
@@ -83,9 +114,9 @@ void merge(GList * ids, GList ** new_pids, TokenPairCount * token_pair_count, in
     *new_pids = g_list_reverse(*new_pids);
 }
 
-void get_merges(GList ** pids, int n_merges, TokenPairToIntTable * token_merge_table) {
+void get_merges(GList ** pids, int n_merges, TokenPairToIntTable * token_merge_table, char * vocab[VOCAB_SIZE]) {
     int n_tokens = 256;
-    for (int i = 0; i < n_merges; i++) {
+    for (int i = n_tokens; i < n_tokens + n_merges; i++) {
         TokenPairToIntTable * token_pair_counts = table_new();
         get_stats(*pids, token_pair_counts);
 
@@ -93,13 +124,25 @@ void get_merges(GList ** pids, int n_merges, TokenPairToIntTable * token_merge_t
         get_max_token_pair_count(token_pair_counts, max_token_pair_count);
 
         GList * new_ids = NULL;
-        merge(*pids, &new_ids, max_token_pair_count, n_tokens+i);
+        merge(*pids, &new_ids, max_token_pair_count->pair, i);
         g_list_free_full(*pids, free);
 
         **pids = *new_ids;
         free(new_ids);
 
-        table_insert_or_update(token_merge_table, &max_token_pair_count->pair, n_tokens+i);
+        table_insert_or_update(token_merge_table, &max_token_pair_count->pair, i);
+        TokenPair max_pair = max_token_pair_count->pair;
+        vocab[i] = (char *) malloc((strlen(vocab[max_pair.first_token]) + strlen(vocab[max_pair.second_token] + 1) * sizeof(char)));
+
+        if (vocab[i] == NULL) {
+            perror("Error allocating memory to add to vocab");
+            exit(EXIT_FAILURE);
+        }
+
+        strcpy(vocab[i], vocab[max_pair.first_token]);
+        strcat(vocab[i], vocab[max_pair.second_token]);
+
+
 
         table_free(token_pair_counts); 
     }
@@ -119,16 +162,17 @@ int main(int argc, char* argv[]) {
         GList * ids = NULL;
         buffer_to_ids(buffer, &ids, filesize);
 
+        static char * vocab[VOCAB_SIZE];
+        get_initial_vocab(vocab);
         TokenPairToIntTable * table = table_new();
-        get_merges(&ids, 5, table);
+        get_merges(&ids, 10, table, vocab);
         table_print(table);
-
-        print_ids(ids);
 
         free(buffer);
         free(ids);
 
         table_free(table); 
+        vocab_free(vocab);
         printf("Success \n");
 
     } else {

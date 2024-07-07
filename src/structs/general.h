@@ -2,21 +2,21 @@
 #define GENERAL_H
 
 typedef struct {
-    int first_token;
-    int second_token;
+    long first_token;
+    long second_token;
 } TokenPair;
 
 typedef struct {
     TokenPair pair;
-    int count;
+    long count;
 } TokenPairCount;
 
-int* int_new(int value);
+long* long_new(long value);
 
 void token_pair_free(TokenPair *pair);
 
-void value_free(int * value);
+void value_free(long * value);
 
-TokenPair* token_pair_new(int first_token, int second_token);
+TokenPair* token_pair_new(long first_token, long second_token);
 
 #endif // GENERAL_H!

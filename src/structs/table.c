@@ -32,21 +32,25 @@ void table_free(TokenPairToCountTable * table) {
     free(table);
 }
 
-int table_lookup(TokenPairToCountTable * table, TokenPair * pair) {
-    int * lookup = g_hash_table_lookup(table->table, pair);
+long table_lookup(TokenPairToCountTable * table, TokenPair * pair) {
+    long * lookup = g_hash_table_lookup(table->table, pair);
     if (lookup != NULL) {
         return *lookup;
     } else {
-        return -1;
+        return (long) -1;
     }
 }
 
-void table_insert_or_update(TokenPairToCountTable * table, TokenPair * pair, int value) {
-    int * lookup = g_hash_table_lookup(table->table, pair);
+void table_insert_or_update(TokenPairToCountTable * table, TokenPair * pair, long value) {
+    if (value < 0) {
+        perror("Values must be 0 or greater");
+        return;
+    }
+    long * lookup = g_hash_table_lookup(table->table, pair);
     if (lookup != NULL) {
-        g_hash_table_replace(table->table, pair, int_new(value));
+        g_hash_table_replace(table->table, pair, long_new(value));
     } else {
-        g_hash_table_insert(table->table, pair, int_new(value));
+        g_hash_table_insert(table->table, pair, long_new(value));
     }
 }
 
@@ -55,11 +59,11 @@ void table_max(TokenPairToCountTable * table, TokenPair * max_pair) {
     table_keys(table, &keys);
     GList *iter = keys; 
 
-    int max_value = -1;
+    long max_value = -1;
 
     while (iter != NULL) {
         TokenPair *pair = (TokenPair *)iter->data;
-        int value = table_lookup(table, pair);
+        long value = table_lookup(table, pair);
 
         if (value > max_value) {
             *max_pair = *pair; 
@@ -88,8 +92,8 @@ void table_print(TokenPairToCountTable* table) {
 
     while (iter != NULL) {
         TokenPair *key = iter->data;
-        int value = table_lookup(table, key);
-        printf("(%d, %d) => %d\n", key->first_token, key->second_token, value);
+        long value = table_lookup(table, key);
+        printf("(%ld, %ld) => %ld\n", key->first_token, key->second_token, value);
         iter = iter->next;
     }
 

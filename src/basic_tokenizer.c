@@ -3,9 +3,9 @@
 #include "structs/general.h"
 #include "structs/table.h"
 
-void get_merges(GList ** ids, int n_merges, TokenPairToCountTable * token_merge_table, char * vocab[VOCAB_SIZE]) {
-    int n_tokens = 256;
-    for (int i = n_tokens; i < n_tokens + n_merges; i++) {
+void get_merges(GList ** ids, long n_merges, TokenPairToCountTable * token_merge_table, char * vocab[VOCAB_SIZE]) {
+    long n_tokens = 256;
+    for (long i = n_tokens; i < n_tokens + n_merges; i++) {
         TokenPairToCountTable * token_pair_counts = table_new();
         get_stats(*ids, token_pair_counts);
 

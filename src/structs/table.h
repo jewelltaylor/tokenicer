@@ -10,9 +10,9 @@ TokenPairToCountTable * table_new();
 
 void table_free(TokenPairToCountTable * table);
 
-int table_lookup(TokenPairToCountTable * table, TokenPair * pair);
+long table_lookup(TokenPairToCountTable * table, TokenPair * pair);
 
-void table_insert_or_update(TokenPairToCountTable * table, TokenPair * pair, int value);
+void table_insert_or_update(TokenPairToCountTable * table, TokenPair * pair, long value);
 
 void table_max(TokenPairToCountTable * table, TokenPair * max_pair);
 

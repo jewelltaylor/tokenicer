@@ -58,8 +58,8 @@ void print_bytes_in_buffer(unsigned char* buffer, size_t filesize) {
 
 void print_ids(GList * ids) {
     for (GList * iterator = ids; iterator != NULL; iterator = iterator->next) {
-        int * id = iterator->data;
-        printf("%d ", *id);
+        long * id = iterator->data;
+        printf("%ld ", *id);
     }
     printf("Done \n");
 }

@@ -41,4 +41,22 @@ void get_merges(GList ** ids, long n_merges, TokenPairToCountTable * token_merge
 }
 
 void encode(GList ** ids, TokenPairValuePriorityQueue * pqueue) {
+    while (g_list_length(*ids) >= 2 && pqueue_length(pqueue) != 0) { 
+        TokenPairToCountTable * token_pair_counts = table_new();
+        get_stats(*ids, token_pair_counts);
+
+        TokenPairCount * pair_count = pqueue_remove(pqueue);
+
+        if (table_lookup(token_pair_counts, &pair_count->pair) != -1) {
+            GList * new_ids = NULL;
+            merge(*ids, &new_ids, pair_count->pair, pair_count->count);
+            g_list_free_full(*ids, free);
+
+            *ids = new_ids;
+        }
+
+        free(pair_count);
+        table_free(token_pair_counts);
+
+    }
 }

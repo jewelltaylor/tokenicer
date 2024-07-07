@@ -35,7 +35,8 @@ int main(int argc, char* argv[]) {
         TokenPairToCountTable * table = table_new();
         TokenPairValuePriorityQueue * pqueue = pqueue_new();
         get_merges(&ids, 10, table, pqueue, vocab);
-        table_print(table);
+
+        encode(&second_ids, pqueue);
 
         free(buffer);
         g_list_free_full(ids, free);

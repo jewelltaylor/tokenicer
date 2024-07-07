@@ -14,6 +14,8 @@ int table_lookup(TokenPairToIntTable * table, TokenPair * pair);
 
 void table_insert_or_update(TokenPairToIntTable * table, TokenPair * pair, int value);
 
+void table_max(TokenPairToIntTable * table, TokenPair * max_pair);
+
 void table_keys(TokenPairToIntTable * table, GList ** keys);
 
 void table_print(TokenPairToIntTable* table);

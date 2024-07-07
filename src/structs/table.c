@@ -50,6 +50,33 @@ void table_insert_or_update(TokenPairToIntTable * table, TokenPair * pair, int v
     }
 }
 
+void table_max(TokenPairToIntTable * token_pair_counts, TokenPair * max_pair) {
+    GList *keys = NULL;
+    table_keys(token_pair_counts, &keys);
+    GList *iter = keys; 
+
+    int max_value = -1;
+
+    while (iter != NULL) {
+        TokenPair *pair = (TokenPair *)iter->data;
+        int value = table_lookup(token_pair_counts, pair);
+
+        if (value > max_value) {
+            *max_pair = *pair; 
+            max_value = value;
+        }
+        iter = iter->next;
+    }
+    g_list_free(keys);
+
+    if (max_pair == NULL) {
+        perror("Error getting max token pair");
+        return;
+    }
+
+    return;
+}
+
 void table_keys(TokenPairToIntTable * table, GList ** keys_pointer) {
     GList *keys = g_hash_table_get_keys(table->table);
     *keys_pointer = keys;

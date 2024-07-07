@@ -4,20 +4,20 @@
 #include <glib.h>
 #include "general.h"
 
-typedef struct TokenPairToIntTable TokenPairToIntTable; 
+typedef struct TokenPairToCountTable TokenPairToCountTable; 
 
-TokenPairToIntTable * table_new();
+TokenPairToCountTable * table_new();
 
-void table_free(TokenPairToIntTable * table);
+void table_free(TokenPairToCountTable * table);
 
-int table_lookup(TokenPairToIntTable * table, TokenPair * pair);
+int table_lookup(TokenPairToCountTable * table, TokenPair * pair);
 
-void table_insert_or_update(TokenPairToIntTable * table, TokenPair * pair, int value);
+void table_insert_or_update(TokenPairToCountTable * table, TokenPair * pair, int value);
 
-void table_max(TokenPairToIntTable * table, TokenPair * max_pair);
+void table_max(TokenPairToCountTable * table, TokenPair * max_pair);
 
-void table_keys(TokenPairToIntTable * table, GList ** keys);
+void table_keys(TokenPairToCountTable * table, GList ** keys);
 
-void table_print(TokenPairToIntTable* table);
+void table_print(TokenPairToCountTable* table);
 
 #endif // TABLE_H!

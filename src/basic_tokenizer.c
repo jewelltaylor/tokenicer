@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include "basic_tokenizer.h"
+#include "structs/general.h"
+#include "structs/table.h"
 
-void get_merges(GList ** ids, int n_merges, TokenPairToIntTable * token_merge_table, char * vocab[VOCAB_SIZE]) {
+void get_merges(GList ** ids, int n_merges, TokenPairToCountTable * token_merge_table, char * vocab[VOCAB_SIZE]) {
     int n_tokens = 256;
     for (int i = n_tokens; i < n_tokens + n_merges; i++) {
-        TokenPairToIntTable * token_pair_counts = table_new();
+        TokenPairToCountTable * token_pair_counts = table_new();
         get_stats(*ids, token_pair_counts);
 
         TokenPair * max_pair = malloc(sizeof(TokenPair));  

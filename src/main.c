@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 
         static char * vocab[VOCAB_SIZE];
         get_initial_vocab(vocab);
-        TokenPairToIntTable * table = table_new();
+        TokenPairToCountTable * table = table_new();
         get_merges(&ids, 10, table, vocab);
         table_print(table);
 

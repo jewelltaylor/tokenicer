@@ -4,7 +4,7 @@
 #include "general.h" 
 #include "table.h" 
 
-struct TokenPairToIntTable {
+struct TokenPairToCountTable {
     GHashTable * table;
 };
 
@@ -19,20 +19,20 @@ guint token_pair_hash(gconstpointer a) {
     return g_int_hash(&pair->first_token) ^ g_int_hash(&pair->second_token);
 }
 
-TokenPairToIntTable * table_new() {
-    TokenPairToIntTable * table = malloc(sizeof(TokenPairToIntTable));
+TokenPairToCountTable * table_new() {
+    TokenPairToCountTable * table = malloc(sizeof(TokenPairToCountTable));
     GHashTable *glib_table = g_hash_table_new_full(token_pair_hash, token_pair_equal, free, free); 
     table->table = glib_table;
     return table; 
 }
 
-void table_free(TokenPairToIntTable * table) {
+void table_free(TokenPairToCountTable * table) {
     GHashTable * glib_table = table->table;
     g_hash_table_destroy(glib_table);
     free(table);
 }
 
-int table_lookup(TokenPairToIntTable * table, TokenPair * pair) {
+int table_lookup(TokenPairToCountTable * table, TokenPair * pair) {
     int * lookup = g_hash_table_lookup(table->table, pair);
     if (lookup != NULL) {
         return *lookup;
@@ -41,7 +41,7 @@ int table_lookup(TokenPairToIntTable * table, TokenPair * pair) {
     }
 }
 
-void table_insert_or_update(TokenPairToIntTable * table, TokenPair * pair, int value) {
+void table_insert_or_update(TokenPairToCountTable * table, TokenPair * pair, int value) {
     int * lookup = g_hash_table_lookup(table->table, pair);
     if (lookup != NULL) {
         g_hash_table_replace(table->table, pair, int_new(value));
@@ -50,16 +50,16 @@ void table_insert_or_update(TokenPairToIntTable * table, TokenPair * pair, int v
     }
 }
 
-void table_max(TokenPairToIntTable * token_pair_counts, TokenPair * max_pair) {
+void table_max(TokenPairToCountTable * table, TokenPair * max_pair) {
     GList *keys = NULL;
-    table_keys(token_pair_counts, &keys);
+    table_keys(table, &keys);
     GList *iter = keys; 
 
     int max_value = -1;
 
     while (iter != NULL) {
         TokenPair *pair = (TokenPair *)iter->data;
-        int value = table_lookup(token_pair_counts, pair);
+        int value = table_lookup(table, pair);
 
         if (value > max_value) {
             *max_pair = *pair; 
@@ -77,12 +77,12 @@ void table_max(TokenPairToIntTable * token_pair_counts, TokenPair * max_pair) {
     return;
 }
 
-void table_keys(TokenPairToIntTable * table, GList ** keys_pointer) {
+void table_keys(TokenPairToCountTable * table, GList ** keys_pointer) {
     GList *keys = g_hash_table_get_keys(table->table);
     *keys_pointer = keys;
 }
 
-void table_print(TokenPairToIntTable* table) {
+void table_print(TokenPairToCountTable* table) {
     GList *keys = g_hash_table_get_keys(table->table);
     GList *iter = keys;
 

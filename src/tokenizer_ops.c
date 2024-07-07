@@ -1,8 +1,9 @@
 #include <stdlib.h> // free 
 #include <stdio.h> // printf
 #include "tokenizer_ops.h"
+#include "structs/table.h"
 
-void get_stats(GList * ids, TokenPairToIntTable * token_pair_counts) {
+void get_stats(GList * ids, TokenPairToCountTable * token_pair_counts) {
     for (GList * iterator = ids; iterator !=  NULL && iterator->next != NULL; iterator = iterator->next) { 
         int *first_token = (int *) iterator->data;
         int *second_token = (int *) iterator->next->data;

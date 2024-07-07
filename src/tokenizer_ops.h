@@ -8,7 +8,7 @@
 
 void merge(GList * ids, GList ** new_pids, TokenPair pair, int id);
 
-void get_stats(GList * ids, TokenPairToIntTable * token_pair_counts);
+void get_stats(GList * ids, TokenPairToCountTable * token_pair_counts);
 
 void buffer_to_ids(unsigned char * buffer, GList ** pids, int sequence_length);
 

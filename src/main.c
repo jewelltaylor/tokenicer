@@ -3,6 +3,7 @@
 #include <glib.h> // open 
 
 #include "io.h"
+#include "structs/pqueue.h"
 #include "structs/table.h"
 #include "tokenizer_ops.h"
 #include "basic_tokenizer.h"
@@ -32,7 +33,8 @@ int main(int argc, char* argv[]) {
         static char * vocab[VOCAB_SIZE];
         get_initial_vocab(vocab);
         TokenPairToCountTable * table = table_new();
-        get_merges(&ids, 10, table, vocab);
+        TokenPairValuePriorityQueue * pqueue = pqueue_new();
+        get_merges(&ids, 10, table, pqueue, vocab);
         table_print(table);
 
         free(buffer);
@@ -41,6 +43,7 @@ int main(int argc, char* argv[]) {
         g_list_free_full(second_ids, free);
 
         table_free(table); 
+        pqueue_free(pqueue); 
         vocab_free(vocab);
         printf("Success \n");
 

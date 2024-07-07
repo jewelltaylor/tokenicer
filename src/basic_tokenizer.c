@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include "basic_tokenizer.h"
 #include "structs/general.h"
+#include "structs/pqueue.h"
 #include "structs/table.h"
 
-void get_merges(GList ** ids, long n_merges, TokenPairToCountTable * token_merge_table, char * vocab[VOCAB_SIZE]) {
+void get_merges(GList ** ids, long n_merges, TokenPairToCountTable * token_merge_table, TokenPairValuePriorityQueue * pqueue, char * vocab[VOCAB_SIZE]) {
     long n_tokens = 256;
     for (long i = n_tokens; i < n_tokens + n_merges; i++) {
         TokenPairToCountTable * token_pair_counts = table_new();
@@ -19,6 +20,12 @@ void get_merges(GList ** ids, long n_merges, TokenPairToCountTable * token_merge
         *ids = new_ids;
 
         table_insert_or_update(token_merge_table, max_pair, i);
+
+        TokenPairCount * pair_count = malloc(sizeof(TokenPairCount));
+        pair_count->pair = *max_pair;
+        pair_count->count = *long_new(i);
+        pqueue_insert(pqueue, pair_count);
+
         vocab[i] = (char *) malloc((strlen(vocab[max_pair->first_token]) + strlen(vocab[max_pair->second_token]) + 1) * sizeof(char));
 
         if (vocab[i] == NULL) {
@@ -31,4 +38,7 @@ void get_merges(GList ** ids, long n_merges, TokenPairToCountTable * token_merge
 
         table_free(token_pair_counts); 
     }
+}
+
+void encode(GList ** ids, TokenPairValuePriorityQueue * pqueue) {
 }

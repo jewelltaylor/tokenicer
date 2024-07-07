@@ -31,6 +31,10 @@ TokenPairCount * pqueue_remove(TokenPairValuePriorityQueue * pqueue) {
     return (TokenPairCount *) popped_element;
 }
 
+unsigned long pqueue_length(TokenPairValuePriorityQueue * pqueue) {
+    return (unsigned long) g_queue_get_length(pqueue->pqueue);
+}
+
 void pqueue_free(TokenPairValuePriorityQueue * pqueue) {
     g_queue_free(pqueue->pqueue);
     free(pqueue);

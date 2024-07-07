@@ -12,6 +12,8 @@ void pqueue_free(TokenPairValuePriorityQueue * pqueue);
 
 TokenPairCount * pqueue_remove(TokenPairValuePriorityQueue * pqueue);
 
+unsigned long pqueue_length(TokenPairValuePriorityQueue * pqueue);
+
 void pqueue_insert(TokenPairValuePriorityQueue * pqueue,TokenPairCount * token_pair_count);
 
 #endif // PQUEUE_H!

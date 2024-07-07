@@ -14,12 +14,11 @@ void get_merges(GList ** ids, int n_merges, TokenPairToIntTable * token_merge_ta
         merge(*ids, &new_ids, max_token_pair_count->pair, i);
         g_list_free_full(*ids, free);
 
-        **ids = *new_ids;
-        free(new_ids);
+        *ids = new_ids;
 
         table_insert_or_update(token_merge_table, &max_token_pair_count->pair, i);
         TokenPair max_pair = max_token_pair_count->pair;
-        vocab[i] = (char *) malloc((strlen(vocab[max_pair.first_token]) + strlen(vocab[max_pair.second_token] + 1) * sizeof(char)));
+        vocab[i] = (char *) malloc((strlen(vocab[max_pair.first_token]) + strlen(vocab[max_pair.second_token]) + 1) * sizeof(char));
 
         if (vocab[i] == NULL) {
             perror("Error allocating memory to add to vocab");

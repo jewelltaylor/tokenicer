@@ -44,36 +44,6 @@ void buffer_to_ids(unsigned char * buffer, GList ** pids, int sequence_length) {
     return;
 }
 
-void get_max_token_pair_count(TokenPairToIntTable * token_pair_counts, TokenPairCount * max_token_pair_count) {
-    GList *keys = NULL;
-    table_keys(token_pair_counts, &keys);
-    GList *iter = keys; 
-
-    TokenPair *max_pair = NULL;
-    int max_value = -1;
-
-    while (iter != NULL) {
-        TokenPair *pair = (TokenPair *)iter->data;
-        int value = table_lookup(token_pair_counts, pair);
-
-        if (value > max_value) {
-            max_pair = pair; 
-            max_value = value;
-        }
-        iter = iter->next;
-    }
-    g_list_free(keys);
-
-    if (max_pair == NULL) {
-        perror("Error getting max token pair");
-        return;
-    }
-    max_token_pair_count->pair = *max_pair;
-    max_token_pair_count->count = max_value;
-
-    return;
-}
-
 void get_initial_vocab(char * vocab[VOCAB_SIZE]) {
     for (int i = 0; i < 256; i++) {
         vocab[i] = (char *) malloc(2 * sizeof(char));

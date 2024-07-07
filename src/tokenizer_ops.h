@@ -12,8 +12,6 @@ void get_stats(GList * ids, TokenPairToIntTable * token_pair_counts);
 
 void buffer_to_ids(unsigned char * buffer, GList ** pids, int sequence_length);
 
-void get_max_token_pair_count(TokenPairToIntTable * token_pair_counts, TokenPairCount * max_token_pair_count);
-
 void get_initial_vocab(char * vocab[VOCAB_SIZE]);
 
 void vocab_free(char * vocab[VOCAB_SIZE]);

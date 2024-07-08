@@ -9,4 +9,6 @@ void get_merges(GList ** ids, long n_merges, TokenPairToCountTable * token_merge
 
 void encode(GList ** ids, TokenPairValuePriorityQueue * pqueue);
 
+char * decode(GList * ids, char * vocab[VOCAB_SIZE]);
+
 #endif // BASIC_TOKENIZER_H!

@@ -1,8 +1,11 @@
 #include <stdio.h>
+#include <glib.h>
 #include "basic_tokenizer.h"
 #include "structs/general.h"
 #include "structs/pqueue.h"
 #include "structs/table.h"
+#include "tokenizer_ops.h"
+#include "io.h"
 
 void get_merges(GList ** ids, long n_merges, TokenPairToCountTable * token_merge_table, TokenPairValuePriorityQueue * pqueue, char * vocab[VOCAB_SIZE]) {
     long n_tokens = 256;
@@ -60,3 +63,16 @@ void encode(GList ** ids, TokenPairValuePriorityQueue * pqueue) {
 
     }
 }
+
+char * decode(GList * ids, char * vocab[VOCAB_SIZE]) {
+    GString * str = g_string_new("");
+    for (GList * iterator = ids; iterator != NULL; iterator = iterator->next) {
+        long * id = iterator->data;
+        g_string_append(str, vocab[*id]);
+    }
+
+    char * result = g_strdup(str->str);
+    g_string_free(str, TRUE);
+    return result;
+}
+

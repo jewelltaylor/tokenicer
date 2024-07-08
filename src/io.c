@@ -29,7 +29,7 @@ size_t get_filesize(char* filepath) {
     return filesize;
 }
 
-void read_filepath(char* filepath, unsigned char* buffer, size_t filesize) {
+void read_filepath(char* filepath, char* buffer, size_t filesize) {
     FILE *file = fopen(filepath, "r");
     if (file == NULL) {
         perror("Error opening file");
@@ -44,11 +44,13 @@ void read_filepath(char* filepath, unsigned char* buffer, size_t filesize) {
         return;
     }
 
+    buffer[filesize] = '\0';
+
     fclose(file);
     return;
 }
 
-void print_bytes_in_buffer(unsigned char* buffer, size_t filesize) { 
+void print_bytes_in_buffer(char* buffer, size_t filesize) { 
     for (size_t i = 0; i < filesize/sizeof(char); i++) {
         printf("%d ", buffer[i]);
     }

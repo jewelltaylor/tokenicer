@@ -6,9 +6,9 @@
 
 size_t get_filesize(char * filepath);
 
-void read_filepath(char * filepath, unsigned char* buffer, size_t filesize);
+void read_filepath(char * filepath, char* buffer, size_t filesize);
 
-void print_bytes_in_buffer(unsigned char* buffer, size_t filesize);
+void print_bytes_in_buffer(char* buffer, size_t filesize);
 
 void print_ids(GList * ids);
 

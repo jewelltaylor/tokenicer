@@ -15,8 +15,8 @@ int main(int argc, char* argv[]) {
         char* second_filepath = argv[2]; 
         size_t filesize = get_filesize(filepath);
         size_t second_filesize = get_filesize(second_filepath);
-        unsigned char * buffer = (unsigned char *)malloc(filesize); 
-        unsigned char * second_buffer = (unsigned char *)malloc(second_filesize); 
+        char * buffer = (char *)malloc(filesize+1); 
+        char * second_buffer = (char *)malloc(second_filesize+1); 
         if (buffer == NULL || second_buffer == NULL) { 
             perror("Failed to Allocate Memory for Buffer");
             return 0;
@@ -36,13 +36,19 @@ int main(int argc, char* argv[]) {
         TokenPairValuePriorityQueue * pqueue = pqueue_new();
         get_merges(&ids, 10, table, pqueue, vocab);
 
+
         encode(&second_ids, pqueue);
+        char * decoded_encoded_text = decode(second_ids, vocab);
+        char * decoded_merged_text = decode(ids, vocab);
+        printf("%s\n%s\n%s\n", buffer, decoded_encoded_text, decoded_merged_text);
 
         free(buffer);
         g_list_free_full(ids, free);
         free(second_buffer);
         g_list_free_full(second_ids, free);
 
+        free(decoded_merged_text);
+        free(decoded_encoded_text);
         table_free(table); 
         pqueue_free(pqueue); 
         vocab_free(vocab);

@@ -20,22 +20,26 @@ void get_stats(GList * ids, TokenPairToCountTable * token_pair_counts) {
 }
 
 void merge(GList * ids, GList ** new_pids, TokenPair pair, long id) {
-    for (GList * iterator = ids; iterator != NULL && iterator->next != NULL; iterator = iterator->next) {
+    for (GList * iterator = ids; iterator != NULL; iterator = iterator->next) {
         long * new_id = malloc(sizeof(long));
         long *first_token = (long *) iterator->data;
-        long *second_token = (long *) iterator->next->data;
-        if (pair.first_token == *first_token && pair.second_token == *second_token) {
-            iterator = iterator->next;
-            *new_id = id;
-        } else {
+        if (iterator->next == NULL) {
             *new_id = *first_token;
+        } else {
+            long *second_token = (long *) iterator->next->data;
+            if (pair.first_token == *first_token && pair.second_token == *second_token) {
+                iterator = iterator->next;
+                *new_id = id;
+            } else {
+                *new_id = *first_token;
+            }
         }
         *new_pids = g_list_prepend(*new_pids, new_id);
     }
     *new_pids = g_list_reverse(*new_pids);
 }
 
-void buffer_to_ids(unsigned char * buffer, GList ** pids, long sequence_length) { 
+void buffer_to_ids(char * buffer, GList ** pids, long sequence_length) { 
     for (long i = 0; i < sequence_length; i++) {
         long * id = malloc(sizeof(int));
         *id = (long) buffer[i];

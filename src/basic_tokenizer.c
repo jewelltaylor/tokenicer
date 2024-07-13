@@ -1,41 +1,28 @@
 #include <stdio.h>
 #include <glib.h>
+#include <string.h>
 #include "basic_tokenizer.h"
 #include "structs/general.h"
 #include "structs/pqueue.h"
 #include "structs/table.h"
 #include "tokenizer_ops.h"
-#include "io.h"
 
-void get_merges(GList ** ids, long n_merges, TokenPairToCountTable * token_merge_table, TokenPairValuePriorityQueue * pqueue, char * vocab[VOCAB_SIZE]) {
-    long n_tokens = 256;
-    for (long i = n_tokens; i < n_tokens + n_merges; i++) {
+void get_merges(GList ** ids, TokenPairToCountTable * token_merge_table, TokenPairValuePriorityQueue * pqueue, char ** vocab, long vocab_size) {
+    for (long i = 256; i < vocab_size - 256; i++) {
         TokenPairToCountTable * token_pair_counts = table_new();
         get_stats(*ids, token_pair_counts);
 
         TokenPair * max_pair = malloc(sizeof(TokenPair));  
         table_max(token_pair_counts, max_pair);
-
-        GList * new_ids = NULL;
-        merge(*ids, &new_ids, *max_pair, i);
-        g_list_free_full(*ids, free);
-
-        *ids = new_ids;
-
         table_insert_or_update(token_merge_table, max_pair, i);
 
-        TokenPairCount * pair_count = malloc(sizeof(TokenPairCount));
-        pair_count->pair = *max_pair;
-        pair_count->count = *long_new(i);
+        *ids = merge(*ids, *max_pair, i);
+
+        TokenPairCount * pair_count = token_pair_count_new(max_pair->first_token, max_pair->second_token, i);
         pqueue_insert(pqueue, pair_count);
 
-        vocab[i] = (char *) malloc((strlen(vocab[max_pair->first_token]) + strlen(vocab[max_pair->second_token]) + 1) * sizeof(char));
-
-        if (vocab[i] == NULL) {
-            perror("Error allocating memory to add to vocab");
-            exit(EXIT_FAILURE);
-        }
-
+        int token_str_len = strlen(vocab[max_pair->first_token]) + strlen(vocab[max_pair->second_token]) + 1;
+        vocab[i] = (char *) malloc(token_str_len * sizeof(char));
         strcpy(vocab[i], vocab[max_pair->first_token]);
         strcat(vocab[i], vocab[max_pair->second_token]);
 
@@ -43,28 +30,24 @@ void get_merges(GList ** ids, long n_merges, TokenPairToCountTable * token_merge
     }
 }
 
-void encode(GList ** ids, TokenPairValuePriorityQueue * pqueue) {
-    while (g_list_length(*ids) >= 2 && pqueue_length(pqueue) != 0) { 
-        TokenPairToCountTable * token_pair_counts = table_new();
-        get_stats(*ids, token_pair_counts);
+void encode(GList ** ids, TokenPairValuePriorityQueue * pq) {
+    while (g_list_length(*ids) >= 2 && pqueue_length(pq) != 0) { 
+        TokenPairToCountTable * table = table_new();
+        get_stats(*ids, table);
 
-        TokenPairCount * pair_count = pqueue_remove(pqueue);
+        while (pqueue_length(pq) && table_lookup(table, &pqueue_peek(pq)->pair) == -1) pqueue_remove(pq);
 
-        if (table_lookup(token_pair_counts, &pair_count->pair) != -1) {
-            GList * new_ids = NULL;
-            merge(*ids, &new_ids, pair_count->pair, pair_count->count);
-            g_list_free_full(*ids, free);
-
-            *ids = new_ids;
+        if (pqueue_length(pq)) {
+            TokenPairCount * head = pqueue_peek(pq); 
+            TokenPairCount * pair_count = token_pair_count_new(head->pair.first_token, head->pair.second_token, head->count);
+            *ids = merge(*ids, pair_count->pair, pair_count->count);
+            free(pair_count);
         }
-
-        free(pair_count);
-        table_free(token_pair_counts);
-
+        table_free(table);
     }
 }
 
-char * decode(GList * ids, char * vocab[VOCAB_SIZE]) {
+char * decode(GList * ids, char ** vocab) {
     GString * str = g_string_new("");
     for (GList * iterator = ids; iterator != NULL; iterator = iterator->next) {
         long * id = iterator->data;

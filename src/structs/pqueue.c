@@ -26,8 +26,13 @@ void pqueue_insert(TokenPairValuePriorityQueue * pqueue, TokenPairCount * pair_c
     g_queue_insert_sorted(pqueue->pqueue, g_pair_count, compare_elements, NULL);
 }
 
-TokenPairCount * pqueue_remove(TokenPairValuePriorityQueue * pqueue) {
-    gpointer popped_element = g_queue_pop_head(pqueue->pqueue);
+void pqueue_remove(TokenPairValuePriorityQueue * pqueue) {
+    TokenPairCount * pair_count = (TokenPairCount *) g_queue_pop_head(pqueue->pqueue);
+    free(pair_count);
+}
+
+TokenPairCount * pqueue_peek(TokenPairValuePriorityQueue * pqueue) {
+    gpointer popped_element = g_queue_peek_head(pqueue->pqueue);
     return (TokenPairCount *) popped_element;
 }
 

@@ -6,14 +6,14 @@
 
 #define VOCAB_SIZE 267 
 
-void merge(GList * ids, GList ** new_pids, TokenPair pair, long id);
+GList * merge(GList * ids, TokenPair pair, long id);
 
 void get_stats(GList * ids, TokenPairToCountTable * token_pair_counts);
 
 void buffer_to_ids(char * buffer, GList ** pids, long sequence_length);
 
-void get_initial_vocab(char * vocab[VOCAB_SIZE]);
+void get_initial_vocab(char ** vocab);
 
-void vocab_free(char * vocab[VOCAB_SIZE]);
+void vocab_free(char ** vocab, long vocab_size);
 
 #endif // TOKENIZER_OPS_H!

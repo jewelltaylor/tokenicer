@@ -10,7 +10,9 @@ TokenPairValuePriorityQueue * pqueue_new();
 
 void pqueue_free(TokenPairValuePriorityQueue * pqueue);
 
-TokenPairCount * pqueue_remove(TokenPairValuePriorityQueue * pqueue);
+void pqueue_remove(TokenPairValuePriorityQueue * pqueue);
+
+TokenPairCount * pqueue_peek(TokenPairValuePriorityQueue * pqueue);
 
 unsigned long pqueue_length(TokenPairValuePriorityQueue * pqueue);
 

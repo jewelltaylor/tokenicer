@@ -1,23 +1,23 @@
 #ifndef TABLE_H
-#define TABLE_H 
+#define TABLE_H
 
-#include <glib.h>
 #include "general.h"
+#include <glib.h>
 
-typedef struct TokenPairToCountTable TokenPairToCountTable; 
+typedef struct TokenPairToCountTable TokenPairToCountTable;
 
-TokenPairToCountTable * table_new();
+TokenPairToCountTable *table_new();
 
-void table_free(TokenPairToCountTable * table);
+void table_free(TokenPairToCountTable *table);
 
-long table_lookup(TokenPairToCountTable * table, TokenPair * pair);
+long table_lookup(TokenPairToCountTable *table, const TokenPair *pair);
 
-void table_insert_or_update(TokenPairToCountTable * table, TokenPair * pair, long value);
+void table_insert_or_update(TokenPairToCountTable *table, TokenPair *pair, long value);
 
-void table_max(TokenPairToCountTable * table, TokenPair * max_pair);
+void table_max(TokenPairToCountTable *table, TokenPair *max_pair);
 
-void table_keys(TokenPairToCountTable * table, GList ** keys);
+void table_keys(TokenPairToCountTable *table, GList **keys);
 
-void table_print(TokenPairToCountTable* table);
+void table_print(TokenPairToCountTable *table);
 
 #endif // TABLE_H!

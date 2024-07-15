@@ -1,4 +1,4 @@
-#ifndef GENERAL_H 
+#ifndef GENERAL_H
 #define GENERAL_H
 
 typedef struct {
@@ -11,13 +11,13 @@ typedef struct {
     long count;
 } TokenPairCount;
 
-long* long_new(long value);
+long *long_new(long value);
 
 void token_pair_free(TokenPair *pair);
 
-void value_free(long * value);
+void value_free(long *value);
 
-TokenPair* token_pair_new(long first_token, long second_token);
-TokenPairCount * token_pair_count_new(long first_token, long second_token, long count);
+TokenPair *token_pair_new(long first_token, long second_token);
+TokenPairCount *token_pair_count_new(long first_token, long second_token, long count);
 
 #endif // GENERAL_H!

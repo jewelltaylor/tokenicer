@@ -5,11 +5,11 @@
 #include <glib.h>
 
 #define VOCAB_SIZE 267
-void merge(GList *ids, GList **new_ids, TokenPair pair, long id);
+GList *merge(GList *ids, TokenPair pair, long id);
 
-void get_stats(GList *ids, TokenPairToCountTable *token_pair_counts);
+TokenPairToCountTable *get_stats(GList *ids);
 
-GList *buffer_to_ids(const char *buffer, long sequence_length);
+GList *text_to_ids(const char *text);
 
 char **vocab_init(long vocab_size);
 

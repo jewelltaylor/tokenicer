@@ -3,7 +3,8 @@
 #include <stdio.h>  // printf
 #include <stdlib.h> // free
 
-void get_stats(GList *ids, TokenPairToCountTable *token_pair_counts) {
+TokenPairToCountTable *get_stats(GList *ids) {
+    TokenPairToCountTable *token_pair_counts = table_new();
     for (GList *iterator = ids; iterator != NULL && iterator->next != NULL; iterator = iterator->next) {
         const long *first_token = (long *)iterator->data;
         const long *second_token = (long *)iterator->next->data;
@@ -12,9 +13,11 @@ void get_stats(GList *ids, TokenPairToCountTable *token_pair_counts) {
         const long value = table_lookup(token_pair_counts, pair);
         table_insert_or_update(token_pair_counts, pair, value == -1 ? 1 : value + 1);
     }
+    return token_pair_counts;
 }
 
-void merge(GList *ids, GList **new_ids, TokenPair pair, long id) {
+GList *merge(GList *ids, TokenPair pair, long id) {
+    GList *new_ids = NULL;
     for (GList *iterator = ids; iterator != NULL; iterator = iterator->next) {
         long new_id;
         const long *first_token = (long *)iterator->data;
@@ -29,15 +32,15 @@ void merge(GList *ids, GList **new_ids, TokenPair pair, long id) {
                 new_id = *first_token;
             }
         }
-        *new_ids = g_list_prepend(*new_ids, long_new(new_id));
+        new_ids = g_list_prepend(new_ids, long_new(new_id));
     }
-    *new_ids = g_list_reverse(*new_ids);
-    return;
+    return g_list_reverse(new_ids);
 }
-GList *buffer_to_ids(const char *buffer, long sequence_length) {
+
+GList *text_to_ids(const char *text) {
     GList *ids = NULL;
-    for (long i = 0; i < sequence_length; i++) {
-        ids = g_list_prepend(ids, long_new((long)buffer[i]));
+    for (long i = 0; text[i] != '\0'; i++) {
+        ids = g_list_prepend(ids, long_new((long)text[i]));
     }
     return g_list_reverse(ids);
 }

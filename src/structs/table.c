@@ -55,10 +55,10 @@ void table_insert_or_update(TokenPairToCountTable *table, TokenPair *pair, long 
     }
 }
 
-void table_max(TokenPairToCountTable *table, TokenPair *max_pair) {
-    GList *keys = NULL;
-    table_keys(table, &keys);
+TokenPair *table_max(TokenPairToCountTable *table) {
+    GList *keys = table_keys(table);
     GList *iter = keys;
+    TokenPair *max_pair = malloc(sizeof(TokenPair));
 
     long max_value = -1;
 
@@ -76,16 +76,13 @@ void table_max(TokenPairToCountTable *table, TokenPair *max_pair) {
 
     if (max_pair == NULL) {
         perror("Error getting max token pair");
-        return;
+        exit(EXIT_FAILURE);
     }
 
-    return;
+    return max_pair;
 }
 
-void table_keys(TokenPairToCountTable *table, GList **keys_pointer) {
-    GList *keys = g_hash_table_get_keys(table->table);
-    *keys_pointer = keys;
-}
+GList *table_keys(TokenPairToCountTable *table) { return g_hash_table_get_keys(table->table); }
 
 void table_print(TokenPairToCountTable *table) {
     GList *keys = g_hash_table_get_keys(table->table);

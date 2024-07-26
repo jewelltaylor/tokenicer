@@ -4,11 +4,20 @@
 #include "structs/pqueue.h"
 #include "structs/table.h"
 
-void get_merges(GList **ids, TokenPairToCountTable *token_merge_table, TokenPairValuePriorityQueue *pqueue,
-                char **vocab, long vocab_size);
+typedef struct {
+    GList *ids;
+    TokenPairToCountTable *token_merge_table;
+    TokenPairValuePriorityQueue *pqueue;
+    char **vocab;
+    long *vocab_size;
+} Tokenizer;
 
-GList *encode(GList **ids, TokenPairValuePriorityQueue *pqueue);
+Tokenizer *tokenizer_train(const char *text, long vocab_size);
 
-char *decode(GList *ids, char **vocab);
+GList *tokenizer_encode(const char *text, Tokenizer *tokenizer);
+
+char *tokenizer_decode(GList *ids, Tokenizer *tokenizer);
+
+void tokenizer_free(Tokenizer *tokenizer);
 
 #endif // BASIC_TOKENIZER_H!

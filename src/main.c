@@ -4,8 +4,6 @@
 
 #include "basic_tokenizer.h"
 #include "io.h"
-#include "structs/pqueue.h"
-#include "structs/table.h"
 #include "tokenizer_ops.h"
 
 int main(int argc, char *argv[]) {
@@ -13,23 +11,18 @@ int main(int argc, char *argv[]) {
         char *filepath = argv[1];
         size_t filesize = get_filesize(filepath);
 
-        char *buffer = read_filepath(filepath, filesize);
-        GList *ids = buffer_to_ids(buffer, filesize);
+        char *text = read_filepath(filepath, filesize);
+        Tokenizer *tokenizer = tokenizer_train(text, VOCAB_SIZE);
+        GList *encoded_ids = tokenizer_encode(text, tokenizer);
+        const char *decoded_text = tokenizer_decode(encoded_ids, tokenizer);
 
-        char **vocab = vocab_init(VOCAB_SIZE);
-        TokenPairToCountTable *table = table_new();
-        TokenPairValuePriorityQueue *pqueue = pqueue_new();
-        get_merges(&ids, table, pqueue, vocab, VOCAB_SIZE);
-        const char *decoded_text = decode(ids, vocab);
-        printf("%s \n", buffer);
-        printf("%s \n", decoded_text);
+        if (strcmp(text, decoded_text) != 0) {
+            perror("Original text and decoded text equal");
+        }
 
-        g_list_free_full(ids, free);
-        free(buffer);
+        free(text);
+        tokenizer_free(tokenizer);
 
-        table_free(table);
-        pqueue_free(pqueue);
-        vocab_free(vocab, VOCAB_SIZE);
         printf("Success \n");
 
     } else {

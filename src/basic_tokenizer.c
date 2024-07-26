@@ -1,4 +1,5 @@
 #include "basic_tokenizer.h"
+#include "io.h"
 #include "structs/general.h"
 #include "structs/pqueue.h"
 #include "structs/table.h"
@@ -7,20 +8,21 @@
 #include <stdio.h>
 #include <string.h>
 
-void get_merges(GList **ids, TokenPairToCountTable *token_merge_table, TokenPairValuePriorityQueue *pqueue,
-                char **vocab, long vocab_size) {
+Tokenizer *tokenizer_train(const char *text, long vocab_size) {
+
+    GList *ids = text_to_ids(text);
+    TokenPairToCountTable *token_merge_table = table_new();
+    TokenPairValuePriorityQueue *pqueue = pqueue_new();
+    char **vocab = vocab_init(vocab_size);
 
     for (long i = 256; i < vocab_size; i++) {
-        TokenPairToCountTable *token_pair_counts = table_new();
-        get_stats(*ids, token_pair_counts);
-        TokenPair *max_pair = malloc(sizeof(TokenPair));
-        table_max(token_pair_counts, max_pair);
+        TokenPairToCountTable *token_pair_counts = get_stats(ids);
+        TokenPair *max_pair = table_max(token_pair_counts);
         table_insert_or_update(token_merge_table, max_pair, i);
 
-        GList *new_ids = NULL;
-        merge(*ids, &new_ids, *max_pair, i);
-        g_list_free_full(*ids, free);
-        *ids = new_ids;
+        GList *new_ids = merge(ids, *max_pair, i);
+        g_list_free_full(ids, free);
+        ids = new_ids;
 
         TokenPairCount *pair_count = token_pair_count_new(max_pair->first_token, max_pair->second_token, i);
         pqueue_insert(pqueue, pair_count);
@@ -32,40 +34,50 @@ void get_merges(GList **ids, TokenPairToCountTable *token_merge_table, TokenPair
 
         table_free(token_pair_counts);
     }
-    return;
+    Tokenizer *tokenizer = malloc(sizeof(Tokenizer));
+    *tokenizer = (Tokenizer){ids, token_merge_table, pqueue, vocab, long_new(vocab_size)};
+    return tokenizer;
 }
 
-GList *encode(GList **ids, TokenPairValuePriorityQueue *pq) {
-    while (g_list_length(*ids) >= 2 && pqueue_length(pq) != 0) {
-        TokenPairToCountTable *table = table_new();
-        get_stats(*ids, table);
+GList *tokenizer_encode(const char *text, Tokenizer *tokenizer) {
+    GList *ids = text_to_ids(text);
+    while (g_list_length(ids) >= 2 && pqueue_length(tokenizer->pqueue) != 0) {
+        TokenPairToCountTable *table = get_stats(ids);
 
-        while (pqueue_length(pq) && table_lookup(table, &pqueue_peek(pq)->pair) == -1)
-            pqueue_remove(pq);
+        while (pqueue_length(tokenizer->pqueue) && table_lookup(table, &pqueue_peek(tokenizer->pqueue)->pair) == -1)
+            pqueue_remove(tokenizer->pqueue);
 
-        if (pqueue_length(pq)) {
-            const TokenPairCount *head = pqueue_peek(pq);
+        if (pqueue_length(tokenizer->pqueue)) {
+            const TokenPairCount *head = pqueue_peek(tokenizer->pqueue);
             TokenPairCount *pair_count =
                 token_pair_count_new(head->pair.first_token, head->pair.second_token, head->count);
-            GList *new_ids = NULL;
-            merge(*ids, &new_ids, pair_count->pair, pair_count->count);
-            g_list_free_full(*ids, free);
-            *ids = new_ids;
+            GList *new_ids = merge(ids, pair_count->pair, pair_count->count);
+            g_list_free_full(ids, free);
+            ids = new_ids;
             free(pair_count);
         }
         table_free(table);
     }
-    return *new_ids;
+    return ids;
 }
 
-char *decode(GList *ids, char **vocab) {
+char *tokenizer_decode(GList *ids, Tokenizer *tokenizer) {
     GString *str = g_string_new("");
     for (GList *iterator = ids; iterator != NULL; iterator = iterator->next) {
         long *id = iterator->data;
-        g_string_append(str, vocab[*id]);
+        g_string_append(str, tokenizer->vocab[*id]);
     }
 
     char *result = g_strdup(str->str);
     g_string_free(str, TRUE);
     return result;
+}
+
+void tokenizer_free(Tokenizer *tokenizer) {
+    g_list_free_full(tokenizer->ids, free);
+    table_free(tokenizer->token_merge_table);
+    pqueue_free(tokenizer->pqueue);
+    vocab_free(tokenizer->vocab, *tokenizer->vocab_size);
+    free(tokenizer->vocab_size);
+    free(tokenizer);
 }

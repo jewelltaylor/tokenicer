@@ -50,7 +50,6 @@ void table_insert_or_update(TokenPairToCountTable *table, TokenPair *pair, long 
     const long *lookup = g_hash_table_lookup(table->table, pair);
     if (lookup != NULL) {
         g_hash_table_replace(table->table, pair, long_new(value));
-        free(pair);
     } else {
         g_hash_table_insert(table->table, pair, long_new(value));
     }

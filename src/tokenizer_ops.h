@@ -5,8 +5,7 @@
 #include <glib.h>
 
 #define VOCAB_SIZE 267
-
-GList *merge(GList *ids, TokenPair pair, long id);
+void merge(GList *ids, GList **new_ids, TokenPair pair, long id);
 
 void get_stats(GList *ids, TokenPairToCountTable *token_pair_counts);
 

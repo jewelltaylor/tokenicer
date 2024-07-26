@@ -14,18 +14,18 @@ int main(int argc, char *argv[]) {
         size_t filesize = get_filesize(filepath);
 
         char *buffer = read_filepath(filepath, filesize);
-
         GList *ids = buffer_to_ids(buffer, filesize);
 
         char **vocab = vocab_init(VOCAB_SIZE);
         TokenPairToCountTable *table = table_new();
         TokenPairValuePriorityQueue *pqueue = pqueue_new();
         get_merges(&ids, table, pqueue, vocab, VOCAB_SIZE);
+        const char *decoded_text = decode(ids, vocab);
+        printf("%s \n", buffer);
+        printf("%s \n", decoded_text);
 
-        print_ids(ids);
-
-        free(buffer);
         g_list_free_full(ids, free);
+        free(buffer);
 
         table_free(table);
         pqueue_free(pqueue);

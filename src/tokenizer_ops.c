@@ -14,8 +14,7 @@ void get_stats(GList *ids, TokenPairToCountTable *token_pair_counts) {
     }
 }
 
-GList *merge(GList *ids, TokenPair pair, long id) {
-    GList *new_ids = NULL;
+void merge(GList *ids, GList **new_ids, TokenPair pair, long id) {
     for (GList *iterator = ids; iterator != NULL; iterator = iterator->next) {
         long new_id;
         const long *first_token = (long *)iterator->data;
@@ -30,12 +29,11 @@ GList *merge(GList *ids, TokenPair pair, long id) {
                 new_id = *first_token;
             }
         }
-        new_ids = g_list_prepend(new_ids, long_new(new_id));
+        *new_ids = g_list_prepend(*new_ids, long_new(new_id));
     }
-    g_list_free_full(ids, free);
-    return g_list_reverse(new_ids);
+    *new_ids = g_list_reverse(*new_ids);
+    return;
 }
-
 GList *buffer_to_ids(const char *buffer, long sequence_length) {
     GList *ids = NULL;
     for (long i = 0; i < sequence_length; i++) {

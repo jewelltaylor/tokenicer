@@ -9,15 +9,18 @@
 
 void get_merges(GList **ids, TokenPairToCountTable *token_merge_table, TokenPairValuePriorityQueue *pqueue,
                 char **vocab, long vocab_size) {
-    for (long i = 256; i < vocab_size - 256; i++) {
+
+    for (long i = 256; i < vocab_size; i++) {
         TokenPairToCountTable *token_pair_counts = table_new();
         get_stats(*ids, token_pair_counts);
-
         TokenPair *max_pair = malloc(sizeof(TokenPair));
         table_max(token_pair_counts, max_pair);
         table_insert_or_update(token_merge_table, max_pair, i);
 
-        *ids = merge(*ids, *max_pair, i);
+        GList *new_ids = NULL;
+        merge(*ids, &new_ids, *max_pair, i);
+        g_list_free_full(*ids, free);
+        *ids = new_ids;
 
         TokenPairCount *pair_count = token_pair_count_new(max_pair->first_token, max_pair->second_token, i);
         pqueue_insert(pqueue, pair_count);
@@ -29,9 +32,10 @@ void get_merges(GList **ids, TokenPairToCountTable *token_merge_table, TokenPair
 
         table_free(token_pair_counts);
     }
+    return;
 }
 
-void encode(GList **ids, TokenPairValuePriorityQueue *pq) {
+GList *encode(GList **ids, TokenPairValuePriorityQueue *pq) {
     while (g_list_length(*ids) >= 2 && pqueue_length(pq) != 0) {
         TokenPairToCountTable *table = table_new();
         get_stats(*ids, table);
@@ -43,11 +47,15 @@ void encode(GList **ids, TokenPairValuePriorityQueue *pq) {
             const TokenPairCount *head = pqueue_peek(pq);
             TokenPairCount *pair_count =
                 token_pair_count_new(head->pair.first_token, head->pair.second_token, head->count);
-            *ids = merge(*ids, pair_count->pair, pair_count->count);
+            GList *new_ids = NULL;
+            merge(*ids, &new_ids, pair_count->pair, pair_count->count);
+            g_list_free_full(*ids, free);
+            *ids = new_ids;
             free(pair_count);
         }
         table_free(table);
     }
+    return *new_ids;
 }
 
 char *decode(GList *ids, char **vocab) {

@@ -7,7 +7,7 @@
 void get_merges(GList **ids, TokenPairToCountTable *token_merge_table, TokenPairValuePriorityQueue *pqueue,
                 char **vocab, long vocab_size);
 
-void encode(GList **ids, TokenPairValuePriorityQueue *pqueue);
+GList *encode(GList **ids, TokenPairValuePriorityQueue *pqueue);
 
 char *decode(GList *ids, char **vocab);
 

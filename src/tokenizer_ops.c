@@ -69,4 +69,5 @@ void vocab_free(char **vocab, long vocab_size) {
 
         free(vocab[i]);
     }
+    free(vocab);
 }

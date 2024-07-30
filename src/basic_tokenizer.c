@@ -24,18 +24,17 @@ Tokenizer *tokenizer_train(const char *text, long vocab_size) {
         g_list_free_full(ids, free);
         ids = new_ids;
 
-        TokenPairCount *pair_count = token_pair_count_new(max_pair->first_token, max_pair->second_token, i);
-        pqueue_insert(pqueue, pair_count);
+        pqueue_insert(pqueue, token_pair_count_new(max_pair->first_token, max_pair->second_token, i));
 
         int token_str_len = strlen(vocab[max_pair->first_token]) + strlen(vocab[max_pair->second_token]) + 1;
-        vocab[i] = (char *)malloc(token_str_len * sizeof(char));
+        vocab[i] = malloc(token_str_len * sizeof(char));
         strcpy(vocab[i], vocab[max_pair->first_token]);
         strcat(vocab[i], vocab[max_pair->second_token]);
 
         table_free(token_pair_counts);
     }
     Tokenizer *tokenizer = malloc(sizeof(Tokenizer));
-    *tokenizer = (Tokenizer){ids, token_merge_table, pqueue, vocab, long_new(vocab_size)};
+    *tokenizer = (Tokenizer){ids, token_merge_table, pqueue, vocab, vocab_size};
     return tokenizer;
 }
 
@@ -77,7 +76,6 @@ void tokenizer_free(Tokenizer *tokenizer) {
     g_list_free_full(tokenizer->ids, free);
     table_free(tokenizer->token_merge_table);
     pqueue_free(tokenizer->pqueue);
-    vocab_free(tokenizer->vocab, *tokenizer->vocab_size);
-    free(tokenizer->vocab_size);
+    vocab_free(tokenizer->vocab, tokenizer->vocab_size);
     free(tokenizer);
 }

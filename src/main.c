@@ -3,6 +3,7 @@
 #include <stdlib.h> // free
 
 #include "basic_tokenizer.h"
+#include "structs/table.h"
 #include "io.h"
 #include "tokenizer_ops.h"
 
@@ -12,16 +13,19 @@ int main(int argc, char *argv[]) {
         size_t filesize = get_filesize(filepath);
 
         char *text = read_filepath(filepath, filesize);
+
         Tokenizer *tokenizer = tokenizer_train(text, VOCAB_SIZE);
         GList *encoded_ids = tokenizer_encode(text, tokenizer);
-        const char *decoded_text = tokenizer_decode(encoded_ids, tokenizer);
+        char *decoded_text = tokenizer_decode(encoded_ids, tokenizer);
 
         if (strcmp(text, decoded_text) != 0) {
             perror("Original text and decoded text equal");
         }
 
-        free(text);
         tokenizer_free(tokenizer);
+        free(text);
+        g_list_free_full(encoded_ids, free);
+        free(decoded_text);
 
         printf("Success \n");
 

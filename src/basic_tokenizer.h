@@ -9,7 +9,7 @@ typedef struct {
     TokenPairToCountTable *token_merge_table;
     TokenPairValuePriorityQueue *pqueue;
     char **vocab;
-    long *vocab_size;
+    long vocab_size;
 } Tokenizer;
 
 Tokenizer *tokenizer_train(const char *text, long vocab_size);

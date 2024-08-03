@@ -1,7 +1,7 @@
 #ifndef PQUEUE_H
 #define PQUEUE_H
 
-#include "general.h"
+#include "token_pair.h"
 #include <glib.h>
 
 typedef struct TokenPairValuePriorityQueue TokenPairValuePriorityQueue;

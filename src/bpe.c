@@ -1,8 +1,8 @@
-#include "basic_tokenizer.h"
+#include "bpe.h"
 #include "io.h"
-#include "structs/general.h"
-#include "structs/pqueue.h"
-#include "structs/table.h"
+#include "data_structures/token_pair.h"
+#include "data_structures/priority_queue.h"
+#include "data_structures/hash_table.h"
 #include "tokenizer_ops.h"
 #include <glib.h>
 #include <stdio.h>
@@ -20,11 +20,9 @@ Tokenizer *tokenizer_train(const char *text, long vocab_size) {
         TokenPair *max_pair = table_max(token_pair_counts);
         table_insert_or_update(token_merge_table, max_pair, i);
 
-        GList *new_ids = merge(ids, *max_pair, i);
-        g_list_free_full(ids, free);
-        ids = new_ids;
-
         pqueue_insert(pqueue, token_pair_count_new(max_pair->first_token, max_pair->second_token, i));
+
+        ids = merge(ids, *max_pair, i);
 
         int token_str_len = strlen(vocab[max_pair->first_token]) + strlen(vocab[max_pair->second_token]) + 1;
         vocab[i] = malloc(token_str_len * sizeof(char));
@@ -50,9 +48,7 @@ GList *tokenizer_encode(const char *text, Tokenizer *tokenizer) {
             const TokenPairCount *head = pqueue_peek(tokenizer->pqueue);
             TokenPairCount *pair_count =
                 token_pair_count_new(head->pair.first_token, head->pair.second_token, head->count);
-            GList *new_ids = merge(ids, pair_count->pair, pair_count->count);
-            g_list_free_full(ids, free);
-            ids = new_ids;
+            ids = merge(ids, pair_count->pair, pair_count->count);
             free(pair_count);
         }
         table_free(table);

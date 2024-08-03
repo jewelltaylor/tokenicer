@@ -1,14 +1,11 @@
 #include "tokenizer_ops.h"
-#include "structs/table.h"
 #include <stdio.h>  // printf
 #include <stdlib.h> // free
 
 TokenPairToCountTable *get_stats(GList *ids) {
     TokenPairToCountTable *token_pair_counts = table_new();
     for (GList *iterator = ids; iterator != NULL && iterator->next != NULL; iterator = iterator->next) {
-        const long *first_token = (long *)iterator->data;
-        const long *second_token = (long *)iterator->next->data;
-        TokenPair *pair = token_pair_new(*first_token, *second_token);
+        TokenPair *pair = token_pair_new(*((long *)iterator->data), *((long *)iterator->next->data));
 
         const long value = table_lookup(token_pair_counts, pair);
         table_insert_or_update(token_pair_counts, pair, value == -1 ? 1 : value + 1);
@@ -20,20 +17,15 @@ GList *merge(GList *ids, TokenPair pair, long id) {
     GList *new_ids = NULL;
     for (GList *iterator = ids; iterator != NULL; iterator = iterator->next) {
         long new_id;
-        const long *first_token = (long *)iterator->data;
-        if (iterator->next == NULL) {
-            new_id = *first_token;
+        if (iterator->next == NULL || !(pair.first_token == *(long *)iterator->data  && pair.second_token == *(long *)iterator->next->data)) {
+            new_id = *((long *)iterator->data);
         } else {
-            const long *second_token = (long *)iterator->next->data;
-            if (pair.first_token == *first_token && pair.second_token == *second_token) {
-                iterator = iterator->next;
-                new_id = id;
-            } else {
-                new_id = *first_token;
-            }
+            iterator = iterator->next;
+            new_id = id;
         }
         new_ids = g_list_prepend(new_ids, long_new(new_id));
     }
+    g_list_free_full(ids, free);
     return g_list_reverse(new_ids);
 }
 

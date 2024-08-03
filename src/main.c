@@ -2,8 +2,8 @@
 #include <stdio.h>  // printf
 #include <stdlib.h> // free
 
-#include "basic_tokenizer.h"
-#include "structs/table.h"
+#include "bpe.h"
+#include "data_structures/hash_table.h"
 #include "io.h"
 #include "tokenizer_ops.h"
 

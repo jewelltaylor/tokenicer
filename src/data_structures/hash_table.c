@@ -1,8 +1,8 @@
 #include <glib.h>  // open
 #include <stdio.h> // open
 
-#include "general.h"
-#include "table.h"
+#include "token_pair.h"
+#include "hash_table.h"
 
 struct TokenPairToCountTable {
     GHashTable *table;

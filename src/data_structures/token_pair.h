@@ -1,5 +1,5 @@
-#ifndef GENERAL_H
-#define GENERAL_H
+#ifndef TOKEN_PAIR_H
+#define TOKEN_PAIR_H
 
 typedef struct {
     long first_token;
@@ -20,4 +20,4 @@ void value_free(long *value);
 TokenPair *token_pair_new(long first_token, long second_token);
 TokenPairCount *token_pair_count_new(long first_token, long second_token, long count);
 
-#endif // GENERAL_H!
+#endif // TOKEN_PAIR_H!

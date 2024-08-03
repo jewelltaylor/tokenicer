@@ -1,7 +1,7 @@
 #ifndef TOKENIZER_OPS
 #define TOKENIZER_OPS
 
-#include "structs/table.h"
+#include "data_structures/hash_table.h"
 #include <glib.h>
 
 #define VOCAB_SIZE 267

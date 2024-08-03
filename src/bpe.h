@@ -1,8 +1,8 @@
-#ifndef BASIC_TOKENIZER
-#define BASIC_TOKENIZER
+#ifndef BPE_H
+#define BPE_H 
 
-#include "structs/pqueue.h"
-#include "structs/table.h"
+#include "data_structures/priority_queue.h"
+#include "data_structures/hash_table.h"
 
 typedef struct {
     GList *ids;
@@ -20,4 +20,4 @@ char *tokenizer_decode(GList *ids, Tokenizer *tokenizer);
 
 void tokenizer_free(Tokenizer *tokenizer);
 
-#endif // BASIC_TOKENIZER_H!
+#endif // BPE_H!

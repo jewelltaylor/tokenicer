@@ -1,7 +1,7 @@
 #include <glib.h>
 
-#include "general.h"
-#include "pqueue.h"
+#include "token_pair.h"
+#include "priority_queue.h"
 
 struct TokenPairValuePriorityQueue {
     GQueue *pqueue;

@@ -1,4 +1,4 @@
-#include "general.h"
+#include "token_pair.h"
 #include <stdlib.h>
 
 long *long_new(long value) {

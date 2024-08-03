@@ -1,7 +1,7 @@
-#ifndef TABLE_H
-#define TABLE_H
+#ifndef HASH_TABLE_H
+#define HASH_TABLE_H
 
-#include "general.h"
+#include "token_pair.h"
 #include <glib.h>
 
 typedef struct TokenPairToCountTable TokenPairToCountTable;

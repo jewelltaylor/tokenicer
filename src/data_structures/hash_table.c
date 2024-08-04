@@ -55,6 +55,10 @@ void table_insert_or_update(TokenPairToCountTable *table, TokenPair *pair, long 
     }
 }
 
+long table_size(TokenPairToCountTable *table) {
+    return (long) g_hash_table_size(table->table);
+}
+
 TokenPair *table_max(TokenPairToCountTable *table) {
     GList *keys = table_keys(table);
     GList *iter = keys;
@@ -83,6 +87,38 @@ TokenPair *table_max(TokenPairToCountTable *table) {
 }
 
 GList *table_keys(TokenPairToCountTable *table) { return g_hash_table_get_keys(table->table); }
+
+void table_token_pair_count_save(gpointer key, gpointer value, gpointer user_data) {
+    TokenPair *pair = (TokenPair *) key;
+    long *count = (long *) value;
+    char *filename = (char *) user_data;
+
+    FILE *file = fopen(filename, "ab");
+    if (file == NULL) {
+        perror("Error opening save file");
+        exit(EXIT_FAILURE);
+    }
+
+    fwrite(pair, sizeof(TokenPair), 1, file);
+    fwrite(count, sizeof(long), 1, file);
+
+    fclose(file);
+}
+
+void table_save(TokenPairToCountTable *table, char* filename) {
+    FILE *file = fopen(filename, "ab");
+
+    if (file == NULL) {
+        perror("Error opening the save file");
+        exit(EXIT_FAILURE);
+    }
+
+    long size = table_size(table);
+    fwrite(&size, sizeof(long), 1, file);
+    fclose(file);
+
+    g_hash_table_foreach(table->table, (GHFunc) table_token_pair_count_save, (gpointer) filename);
+}
 
 void table_print(TokenPairToCountTable *table) {
     GList *keys = g_hash_table_get_keys(table->table);

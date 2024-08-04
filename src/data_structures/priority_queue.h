@@ -18,4 +18,10 @@ unsigned long pqueue_length(TokenPairValuePriorityQueue *pqueue);
 
 void pqueue_insert(TokenPairValuePriorityQueue *pqueue, TokenPairCount *token_pair_count);
 
+long pqueue_size(TokenPairValuePriorityQueue *pqueue);
+
+void pqueue_save(TokenPairValuePriorityQueue *pqueue, char *filename);
+
+// TokenPairValuePriorityQueue pqueue_load(char *filename);
+
 #endif // PQUEUE_H!

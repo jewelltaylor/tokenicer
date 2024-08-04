@@ -14,10 +14,16 @@ long table_lookup(TokenPairToCountTable *table, const TokenPair *pair);
 
 void table_insert_or_update(TokenPairToCountTable *table, TokenPair *pair, long value);
 
+long table_size(TokenPairToCountTable *table);
+
 TokenPair *table_max(TokenPairToCountTable *table);
 
 GList *table_keys(TokenPairToCountTable *table);
 
 void table_print(TokenPairToCountTable *table);
+
+void table_save(TokenPairToCountTable *table, char *filename);
+
+// TokenPairToCountTable *table_load(char *filename);
 
 #endif // TABLE_H!

@@ -15,8 +15,8 @@ int main(int argc, char *argv[]) {
         char *text = read_filepath(filepath, filesize);
 
         Tokenizer *tokenizer = tokenizer_train(text, VOCAB_SIZE);
-        GList *encoded_ids = tokenizer_encode(text, tokenizer);
-        char *decoded_text = tokenizer_decode(encoded_ids, tokenizer);
+        GList *encoded_ids = tokenizer_encode(tokenizer, text);
+        char *decoded_text = tokenizer_decode(tokenizer, encoded_ids);
 
         if (strcmp(text, decoded_text) != 0) {
             perror("Original text and decoded text equal");

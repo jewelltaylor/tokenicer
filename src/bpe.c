@@ -1,5 +1,4 @@
 #include "bpe.h"
-#include "io.h"
 #include "data_structures/token_pair.h"
 #include "data_structures/priority_queue.h"
 #include "data_structures/hash_table.h"
@@ -36,7 +35,7 @@ Tokenizer *tokenizer_train(const char *text, long vocab_size) {
     return tokenizer;
 }
 
-GList *tokenizer_encode(const char *text, Tokenizer *tokenizer) {
+GList *tokenizer_encode(Tokenizer *tokenizer, const char *text) {
     GList *ids = text_to_ids(text);
     while (g_list_length(ids) >= 2 && pqueue_length(tokenizer->pqueue) != 0) {
         TokenPairToCountTable *table = get_stats(ids);
@@ -56,7 +55,7 @@ GList *tokenizer_encode(const char *text, Tokenizer *tokenizer) {
     return ids;
 }
 
-char *tokenizer_decode(GList *ids, Tokenizer *tokenizer) {
+char *tokenizer_decode(Tokenizer *tokenizer, GList *ids) {
     GString *str = g_string_new("");
     for (GList *iterator = ids; iterator != NULL; iterator = iterator->next) {
         long *id = iterator->data;
@@ -66,6 +65,11 @@ char *tokenizer_decode(GList *ids, Tokenizer *tokenizer) {
     char *result = g_strdup(str->str);
     g_string_free(str, TRUE);
     return result;
+}
+
+void tokenizer_save(Tokenizer *tokenizer, char *filename) {
+    pqueue_save(tokenizer->pqueue, filename);
+    table_save(tokenizer->token_merge_table, filename);
 }
 
 void tokenizer_free(Tokenizer *tokenizer) {

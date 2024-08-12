@@ -2,6 +2,7 @@
 #define PQUEUE_H
 
 #include "token_pair.h"
+#include <stdio.h>
 #include <glib.h>
 
 typedef struct TokenPairValuePriorityQueue TokenPairValuePriorityQueue;
@@ -20,8 +21,8 @@ void pqueue_insert(TokenPairValuePriorityQueue *pqueue, TokenPairCount *token_pa
 
 long pqueue_size(TokenPairValuePriorityQueue *pqueue);
 
-void pqueue_save(TokenPairValuePriorityQueue *pqueue, char *filename);
+void pqueue_save(TokenPairValuePriorityQueue *pqueue, FILE *file);
 
-// TokenPairValuePriorityQueue pqueue_load(char *filename);
+TokenPairValuePriorityQueue *pqueue_load(FILE *file);
 
 #endif // PQUEUE_H!

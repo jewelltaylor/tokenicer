@@ -30,8 +30,10 @@ Tokenizer *tokenizer_train(const char *text, long vocab_size) {
 
         table_free(token_pair_counts);
     }
+
+    g_list_free_full(ids, free);
     Tokenizer *tokenizer = malloc(sizeof(Tokenizer));
-    *tokenizer = (Tokenizer){ids, token_merge_table, pqueue, vocab, vocab_size};
+    *tokenizer = (Tokenizer){token_merge_table, pqueue, vocab, vocab_size};
     return tokenizer;
 }
 
@@ -67,13 +69,45 @@ char *tokenizer_decode(Tokenizer *tokenizer, GList *ids) {
     return result;
 }
 
-void tokenizer_save(Tokenizer *tokenizer, char *filename) {
-    pqueue_save(tokenizer->pqueue, filename);
-    table_save(tokenizer->token_merge_table, filename);
+void tokenizer_save(Tokenizer *tokenizer, char *filepath) {
+    FILE *file = fopen(filepath, "wb");
+
+    if (file == NULL) { 
+        perror("Error opening load file");
+        exit(EXIT_FAILURE);
+    }
+
+    pqueue_save(tokenizer->pqueue, file);
+    table_save(tokenizer->token_merge_table, file);
+    vocab_size_save(tokenizer->vocab_size, file);
+    vocab_save(tokenizer->vocab, tokenizer->vocab_size, file);
+    fclose(file);
+}
+
+Tokenizer *tokenizer_load(char *filepath) {
+    FILE *file = fopen(filepath, "rb");
+
+    if (file == NULL) { 
+        perror("Error opening load file");
+        exit(EXIT_FAILURE);
+    }
+
+    Tokenizer *tokenizer = malloc(sizeof(Tokenizer));
+    TokenPairValuePriorityQueue *pqueue = pqueue_load(file);
+    tokenizer->pqueue = pqueue;
+    TokenPairToCountTable *table = table_load(file); 
+    tokenizer->token_merge_table = table;
+    long vocab_size = vocab_size_load(file); 
+    tokenizer->vocab_size = vocab_size; 
+    char **vocab = vocab_load(file, tokenizer->vocab_size);
+    tokenizer->vocab = vocab;
+
+    fclose(file);
+
+    return tokenizer;
 }
 
 void tokenizer_free(Tokenizer *tokenizer) {
-    g_list_free_full(tokenizer->ids, free);
     table_free(tokenizer->token_merge_table);
     pqueue_free(tokenizer->pqueue);
     vocab_free(tokenizer->vocab, tokenizer->vocab_size);

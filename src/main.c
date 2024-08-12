@@ -15,17 +15,24 @@ int main(int argc, char *argv[]) {
         char *text = read_filepath(filepath, filesize);
 
         Tokenizer *tokenizer = tokenizer_train(text, VOCAB_SIZE);
-        GList *encoded_ids = tokenizer_encode(tokenizer, text);
-        char *decoded_text = tokenizer_decode(tokenizer, encoded_ids);
+        char *tokenizer_save_path = "tokenizer.save"; 
+        tokenizer_save(tokenizer, tokenizer_save_path); 
+
+        Tokenizer *new_tokenizer = tokenizer_load(tokenizer_save_path);
+
+        GList *encoded_ids = tokenizer_encode(new_tokenizer, text);
+        char *decoded_text = tokenizer_decode(new_tokenizer, encoded_ids);
 
         if (strcmp(text, decoded_text) != 0) {
             perror("Original text and decoded text equal");
         }
 
-        tokenizer_free(tokenizer);
-        free(text);
         g_list_free_full(encoded_ids, free);
         free(decoded_text);
+
+        tokenizer_free(new_tokenizer);
+        tokenizer_free(tokenizer);
+        free(text);
 
         printf("Success \n");
 

@@ -2,6 +2,7 @@
 #define HASH_TABLE_H
 
 #include "token_pair.h"
+#include <stdio.h>
 #include <glib.h>
 
 typedef struct TokenPairToCountTable TokenPairToCountTable;
@@ -22,8 +23,8 @@ GList *table_keys(TokenPairToCountTable *table);
 
 void table_print(TokenPairToCountTable *table);
 
-void table_save(TokenPairToCountTable *table, char *filename);
+void table_save(TokenPairToCountTable *table, FILE *file);
 
-// TokenPairToCountTable *table_load(char *filename);
+TokenPairToCountTable *table_load(FILE *file);
 
 #endif // TABLE_H!

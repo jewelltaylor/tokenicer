@@ -5,7 +5,6 @@
 #include "data_structures/hash_table.h"
 
 typedef struct {
-    GList *ids;
     TokenPairToCountTable *token_merge_table;
     TokenPairValuePriorityQueue *pqueue;
     char **vocab;
@@ -20,7 +19,7 @@ char *tokenizer_decode(Tokenizer *tokenizer, GList *ids);
 
 void tokenizer_save(Tokenizer *tokenizer, char *filename);
 
-// Tokenizer *tokenizer_load(Tokenizer *tokenizer, const char *filename);
+Tokenizer *tokenizer_load(char *filename);
 
 void tokenizer_free(Tokenizer *tokenizer);
 

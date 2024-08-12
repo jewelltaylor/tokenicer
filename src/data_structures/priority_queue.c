@@ -46,23 +46,29 @@ unsigned long pqueue_length(TokenPairValuePriorityQueue *pqueue) {
 
 void pqueue_token_pair_count_save(gpointer data, gpointer user_data) {
     TokenPairCount *pair_count = (TokenPairCount *) data;
-    char *filename =  (char *) user_data;
-    token_pair_count_save(pair_count, filename);
+    FILE *file =  (FILE *) user_data;
+    fwrite(pair_count, sizeof(TokenPairCount), 1, file);
 }
 
-void pqueue_save(TokenPairValuePriorityQueue *pqueue, char *filename) { 
-    FILE *file = fopen(filename, "ab");
-
-    if (file == NULL) {
-        perror("Error opening save file"); 
-        exit(EXIT_FAILURE);
-    }
-
+void pqueue_save(TokenPairValuePriorityQueue *pqueue, FILE *file) { 
     long size = pqueue_size(pqueue);
-    fwrite(&size, sizeof(guint), 1, file);
-    fclose(file);
+    fwrite(&size, sizeof(long), 1, file);
 
-    g_queue_foreach(pqueue->pqueue, (GFunc) pqueue_token_pair_count_save, (gpointer) filename);  
+    g_queue_foreach(pqueue->pqueue, (GFunc) pqueue_token_pair_count_save, file);  
+}
+
+TokenPairValuePriorityQueue *pqueue_load(FILE *file) {
+    long pqueue_length;
+    fread(&pqueue_length, sizeof(long), 1, file);
+
+    TokenPairValuePriorityQueue *pqueue = pqueue_new();
+
+    for (long i = 0; i < pqueue_length; i++) { 
+        TokenPairCount *pair_count = malloc(sizeof(TokenPairCount)); 
+        fread(pair_count, sizeof(TokenPairCount), 1, file); 
+        pqueue_insert(pqueue, pair_count);
+    }
+    return pqueue;
 }
 
 void pqueue_free(TokenPairValuePriorityQueue *pqueue) {

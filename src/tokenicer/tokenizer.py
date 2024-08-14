@@ -1,7 +1,9 @@
 import ctypes
 from ctypes import c_char_p, c_long, c_void_p, POINTER, byref
+import os
 
-libtokenizer = ctypes.CDLL("./lib/libtokenizer.so")
+lib_path = os.path.join(os.path.dirname(__file__), 'libtokenicer.so')
+libtokenizer = ctypes.CDLL(lib_path)
 
 libtokenizer.tokenizer_train.argtypes = [c_char_p, c_long]
 libtokenizer.tokenizer_train.restype = c_void_p

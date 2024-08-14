@@ -1,4 +1,4 @@
-from tokenizer import Tokenizer
+from tokenicer.tokenizer import Tokenizer
 
 train_text = "Here is some example text."
 tokenizer = Tokenizer.train(train_text, vocab_size=260)

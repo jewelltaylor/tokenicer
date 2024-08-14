@@ -1,10 +1,10 @@
-CC = clang
+CC = gcc 
 CFLAGS = -Wall -Wextra -Iinclude `pkg-config --cflags glib-2.0` -fPIC
 LDFLAGS = `pkg-config --libs glib-2.0`
 
 SRC_DIR = src
 OBJ_DIR = obj
-LIB_DIR = lib
+LIB_DIR = ../tokenicer/
 
 # Use find to get all .c files in src directory and its subdirectories
 SRCS = $(shell find $(SRC_DIR) -name '*.c')
@@ -12,7 +12,7 @@ SRCS = $(shell find $(SRC_DIR) -name '*.c')
 # Create object files list with corresponding directory structure in obj
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
 
-TARGET = $(LIB_DIR)/libtokenizer.so
+TARGET = $(LIB_DIR)/libtokenicer.so
 
 all: $(TARGET)
 
@@ -27,6 +27,6 @@ $(LIB_DIR) $(OBJ_DIR):
 	mkdir -p $@
 
 clean:
-	rm -rf $(OBJ_DIR) $(LIB_DIR)
+	rm -rf $(OBJ_DIR)
 
 .PHONY: all clean

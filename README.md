@@ -35,7 +35,7 @@ encoded_ids = tokenizer.encode(text_to_encode)
 decoded_text = tokenizer.decode(encoded_ids)
 
 ```
-A Tokenizer can be also be saved to and loaded from disk:
+A Tokenizer can be also be saved to (`Tokenizer.save`) and loaded from (`Tokenizer.load`) disk:
 ```python
 # Initialize tokenizer by training on utf-8 encoded text
 tokenizer = Tokenizer.train(train_text, vocab_size=40478)
@@ -55,9 +55,10 @@ decoded_text = new_tokenizer.decode(encoded_ids)
 
 ## Roadmap
 Features to include:
-- [] More seamlessly installation 
-- [] Tests for C Code
-- [] Memory Leak Check Tests for C Code
-- [] Tests for Python Code
-- [] Multithreading in C
-- [] Benchmarking against [sentencepiece](https://github.com/google/sentencepiece) and [tokenizer](https://huggingface.co/docs/transformers/en/main_classes/tokenizer) 
+- [ ] More seamlessly installation 
+- [ ] Tests for C Code
+- [ ] Memory Leak Check Tests for C Code
+- [ ] Tests for Python Code
+- [ ] Setup GitHub actions to run checks on server 
+- [ ] Multithreading in C
+- [ ] Benchmarking against [sentencepiece](https://github.com/google/sentencepiece) and [tokenizer](https://huggingface.co/docs/transformers/en/main_classes/tokenizer) 

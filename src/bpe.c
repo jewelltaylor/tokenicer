@@ -73,7 +73,22 @@ Tokenizer *tokenizer_train(const char *text, long vocab_size) {
     return tokenizer;
 }
 
-GList *tokenizer_encode(Tokenizer *tokenizer, const char *text) {
+long *g_list_to_array(GList *ids) {
+    long ids_length = (long) g_list_length(ids); 
+
+    long *ids_array = malloc(sizeof(long) * ids_length); 
+
+    GList *iterator = ids;
+    for (long i = 0; i < ids_length; i++) {
+        ids_array[i] = *(long *) iterator->data;
+        iterator = iterator->next;
+    }
+    g_list_free_full(ids, free);
+
+    return ids_array;
+}
+
+long *tokenizer_encode(Tokenizer *tokenizer, const char *text, long *ids_array_length) {
     GList *ids = text_to_ids(text);
     while (g_list_length(ids) >= 2 && pqueue_length(tokenizer->pqueue) != 0) {
         TokenPairToCountTable *table = get_stats(ids);
@@ -90,14 +105,18 @@ GList *tokenizer_encode(Tokenizer *tokenizer, const char *text) {
         }
         table_free(table);
     }
-    return ids;
+    *ids_array_length = (long) g_list_length(ids);
+    return g_list_to_array(ids);
 }
 
-char *tokenizer_decode(Tokenizer *tokenizer, GList *ids) {
+void tokenizer_free_array(long *ids_array) {
+    free(ids_array);
+}
+
+char *tokenizer_decode(Tokenizer *tokenizer, long *ids_array, long ids_array_length) {
     GString *str = g_string_new("");
-    for (GList *iterator = ids; iterator != NULL; iterator = iterator->next) {
-        long *id = iterator->data;
-        g_string_append(str, tokenizer->vocab[*id]);
+    for (long i = 0; i < ids_array_length; i++) {
+        g_string_append(str, tokenizer->vocab[ids_array[i]]);
     }
 
     char *result = g_strdup(str->str);

@@ -13,9 +13,11 @@ typedef struct {
 
 Tokenizer *tokenizer_train(const char *text, long vocab_size);
 
-GList *tokenizer_encode(Tokenizer *tokenizer, const char *text);
+long *tokenizer_encode(Tokenizer *tokenizer, const char *text, long *ids_array_length);
 
-char *tokenizer_decode(Tokenizer *tokenizer, GList *ids);
+void tokenizer_free_array(long *ids_array);
+
+char *tokenizer_decode(Tokenizer *tokenizer, long *ids_array, long ids_array_length);
 
 void tokenizer_save(Tokenizer *tokenizer, char *filename);
 

@@ -1,5 +1,6 @@
 #include <stdio.h>  // printf
 #include <stdlib.h> // free
+#include <string.h>
 
 char **vocab_init(long vocab_size) {
     char **vocab = malloc(vocab_size * sizeof(char *));
@@ -26,7 +27,7 @@ long vocab_size_load(FILE *file) {
 
 void vocab_save(char **vocab, long vocab_size, FILE *file) {
     for (long i = 256; i < vocab_size; i++) {
-        int token_length = strlen(vocab[i]) + 1;
+        int token_length = (int) strlen(vocab[i]) + 1;
         fwrite(&token_length, sizeof(int), 1, file);
         fwrite(vocab[i], sizeof(char), token_length, file);
     }

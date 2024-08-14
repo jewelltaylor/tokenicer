@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='tokenicer',
@@ -11,4 +11,5 @@ setup(
         'tokenicer': ['*.so'],
     },
     include_package_data=True,
+    install_requires=["pytest"]
 )

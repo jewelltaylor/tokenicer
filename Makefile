@@ -2,9 +2,9 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Iinclude `pkg-config --cflags glib-2.0` -fPIC
 LDFLAGS = `pkg-config --libs glib-2.0`
 
-SRC_DIR = src
+SRC_DIR = src/tokenicer_C
 OBJ_DIR = obj
-LIB_DIR = ../tokenicer/
+LIB_DIR = src/tokenicer
 
 # Use find to get all .c files in src directory and its subdirectories
 SRCS = $(shell find $(SRC_DIR) -name '*.c')

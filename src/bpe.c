@@ -1,7 +1,7 @@
 #include "bpe.h"
-#include "data_structures/token_pair.h"
-#include "data_structures/priority_queue.h"
 #include "data_structures/hash_table.h"
+#include "data_structures/priority_queue.h"
+#include "data_structures/token_pair.h"
 #include "data_structures/vocab.h"
 #include <glib.h>
 #include <stdio.h>
@@ -22,7 +22,8 @@ GList *merge(GList *ids, TokenPair pair, long id) {
     GList *new_ids = NULL;
     for (GList *iterator = ids; iterator != NULL; iterator = iterator->next) {
         long new_id;
-        if (iterator->next == NULL || !(pair.first_token == *(long *)iterator->data  && pair.second_token == *(long *)iterator->next->data)) {
+        if (iterator->next == NULL ||
+            !(pair.first_token == *(long *)iterator->data && pair.second_token == *(long *)iterator->next->data)) {
             new_id = *((long *)iterator->data);
         } else {
             iterator = iterator->next;
@@ -107,7 +108,7 @@ char *tokenizer_decode(Tokenizer *tokenizer, GList *ids) {
 void tokenizer_save(Tokenizer *tokenizer, char *filepath) {
     FILE *file = fopen(filepath, "wb");
 
-    if (file == NULL) { 
+    if (file == NULL) {
         perror("Error opening load file");
         exit(EXIT_FAILURE);
     }
@@ -122,7 +123,7 @@ void tokenizer_save(Tokenizer *tokenizer, char *filepath) {
 Tokenizer *tokenizer_load(char *filepath) {
     FILE *file = fopen(filepath, "rb");
 
-    if (file == NULL) { 
+    if (file == NULL) {
         perror("Error opening load file");
         exit(EXIT_FAILURE);
     }
@@ -130,10 +131,10 @@ Tokenizer *tokenizer_load(char *filepath) {
     Tokenizer *tokenizer = malloc(sizeof(Tokenizer));
     TokenPairValuePriorityQueue *pqueue = pqueue_load(file);
     tokenizer->pqueue = pqueue;
-    TokenPairToCountTable *table = table_load(file); 
+    TokenPairToCountTable *table = table_load(file);
     tokenizer->token_merge_table = table;
-    long vocab_size = vocab_size_load(file); 
-    tokenizer->vocab_size = vocab_size; 
+    long vocab_size = vocab_size_load(file);
+    tokenizer->vocab_size = vocab_size;
     char **vocab = vocab_load(file, tokenizer->vocab_size);
     tokenizer->vocab = vocab;
 

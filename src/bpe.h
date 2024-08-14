@@ -1,8 +1,8 @@
 #ifndef BPE_H
-#define BPE_H 
+#define BPE_H
 
-#include "data_structures/priority_queue.h"
 #include "data_structures/hash_table.h"
+#include "data_structures/priority_queue.h"
 
 typedef struct {
     TokenPairToCountTable *token_merge_table;

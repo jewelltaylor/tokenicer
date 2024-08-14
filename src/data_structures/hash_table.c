@@ -1,8 +1,8 @@
 #include <glib.h>  // open
 #include <stdio.h> // open
 
-#include "token_pair.h"
 #include "hash_table.h"
+#include "token_pair.h"
 
 struct TokenPairToCountTable {
     GHashTable *table;
@@ -55,9 +55,7 @@ void table_insert_or_update(TokenPairToCountTable *table, TokenPair *pair, long 
     }
 }
 
-long table_size(TokenPairToCountTable *table) {
-    return (long) g_hash_table_size(table->table);
-}
+long table_size(TokenPairToCountTable *table) { return (long)g_hash_table_size(table->table); }
 
 TokenPair *table_max(TokenPairToCountTable *table) {
     GList *keys = table_keys(table);
@@ -89,19 +87,19 @@ TokenPair *table_max(TokenPairToCountTable *table) {
 GList *table_keys(TokenPairToCountTable *table) { return g_hash_table_get_keys(table->table); }
 
 void table_token_pair_count_save(gpointer key, gpointer value, gpointer user_data) {
-    TokenPair *pair = (TokenPair *) key;
-    long *count = (long *) value;
-    FILE *file = (FILE *) user_data;
+    TokenPair *pair = (TokenPair *)key;
+    long *count = (long *)value;
+    FILE *file = (FILE *)user_data;
 
     fwrite(pair, sizeof(TokenPair), 1, file);
     fwrite(count, sizeof(long), 1, file);
 }
 
-void table_save(TokenPairToCountTable *table, FILE* file) {
+void table_save(TokenPairToCountTable *table, FILE *file) {
     long size = table_size(table);
     fwrite(&size, sizeof(long), 1, file);
 
-    g_hash_table_foreach(table->table, (GHFunc) table_token_pair_count_save, (gpointer) file);
+    g_hash_table_foreach(table->table, (GHFunc)table_token_pair_count_save, (gpointer)file);
 }
 
 TokenPairToCountTable *table_load(FILE *file) {
@@ -113,7 +111,7 @@ TokenPairToCountTable *table_load(FILE *file) {
     for (long i = 0; i < table_size; i++) {
         TokenPair *pair = malloc(sizeof(TokenPair));
         fread(pair, sizeof(TokenPair), 1, file);
-        long count; 
+        long count;
         fread(&count, sizeof(long), 1, file);
         table_insert_or_update(table, pair, count);
     }

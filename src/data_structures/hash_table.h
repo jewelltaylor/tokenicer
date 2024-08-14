@@ -2,8 +2,8 @@
 #define HASH_TABLE_H
 
 #include "token_pair.h"
-#include <stdio.h>
 #include <glib.h>
+#include <stdio.h>
 
 typedef struct TokenPairToCountTable TokenPairToCountTable;
 

@@ -1,8 +1,8 @@
 #include <glib.h>
 #include <stdio.h>
 
-#include "token_pair.h"
 #include "priority_queue.h"
+#include "token_pair.h"
 
 struct TokenPairValuePriorityQueue {
     GQueue *pqueue;
@@ -31,9 +31,7 @@ void pqueue_remove(TokenPairValuePriorityQueue *pqueue) {
     free(pair_count);
 }
 
-long pqueue_size(TokenPairValuePriorityQueue *pqueue) {
-    return (long) g_queue_get_length(pqueue->pqueue);
-}
+long pqueue_size(TokenPairValuePriorityQueue *pqueue) { return (long)g_queue_get_length(pqueue->pqueue); }
 
 const TokenPairCount *pqueue_peek(TokenPairValuePriorityQueue *pqueue) {
     gpointer popped_element = g_queue_peek_head(pqueue->pqueue);
@@ -45,16 +43,16 @@ unsigned long pqueue_length(TokenPairValuePriorityQueue *pqueue) {
 }
 
 void pqueue_token_pair_count_save(gpointer data, gpointer user_data) {
-    TokenPairCount *pair_count = (TokenPairCount *) data;
-    FILE *file =  (FILE *) user_data;
+    TokenPairCount *pair_count = (TokenPairCount *)data;
+    FILE *file = (FILE *)user_data;
     fwrite(pair_count, sizeof(TokenPairCount), 1, file);
 }
 
-void pqueue_save(TokenPairValuePriorityQueue *pqueue, FILE *file) { 
+void pqueue_save(TokenPairValuePriorityQueue *pqueue, FILE *file) {
     long size = pqueue_size(pqueue);
     fwrite(&size, sizeof(long), 1, file);
 
-    g_queue_foreach(pqueue->pqueue, (GFunc) pqueue_token_pair_count_save, file);  
+    g_queue_foreach(pqueue->pqueue, (GFunc)pqueue_token_pair_count_save, file);
 }
 
 TokenPairValuePriorityQueue *pqueue_load(FILE *file) {
@@ -63,9 +61,9 @@ TokenPairValuePriorityQueue *pqueue_load(FILE *file) {
 
     TokenPairValuePriorityQueue *pqueue = pqueue_new();
 
-    for (long i = 0; i < pqueue_length; i++) { 
-        TokenPairCount *pair_count = malloc(sizeof(TokenPairCount)); 
-        fread(pair_count, sizeof(TokenPairCount), 1, file); 
+    for (long i = 0; i < pqueue_length; i++) {
+        TokenPairCount *pair_count = malloc(sizeof(TokenPairCount));
+        fread(pair_count, sizeof(TokenPairCount), 1, file);
         pqueue_insert(pqueue, pair_count);
     }
     return pqueue;

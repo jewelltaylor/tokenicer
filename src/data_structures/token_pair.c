@@ -1,6 +1,6 @@
 #include "token_pair.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 long *long_new(long value) {
     long *p = malloc(sizeof(long));
